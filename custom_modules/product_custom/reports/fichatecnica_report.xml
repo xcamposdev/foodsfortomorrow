@@ -5,21 +5,21 @@
         id="report_fichatecnica_print"
         model="product.template"
         string="Ficha tecnica producto"
-        name="product_custom.report_template_fichatecnica_print"
-        file="product_custom.report_template_fichatecnica_print"
+        name="product_custom.report_fichatecnica"
+        file="product_custom.report_fichatecnica"
         report_type="qweb-pdf"/>
 
-    <record id="report_fichatecnica_print" model="ir.actions.report">
+    <!--<record id="report_fichatecnica_print" model="ir.actions.report">
         <field name="paperformat_id" ref="base.paperformat_euro"/>
     </record>
 
      <template id="report_template_fichatecnica_print">
         <t t-call="web.external_layout">
-        <!--<t t-call="web.external_layout_standard">-->
+        <t t-call="web.external_layout_standard">
             <div class="page">
                 
 
             </div>
         </t>
-    </template>
+    </template>-->
 </odoo>

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<odoo>
+	<template id="report_fichatecnica">
+		<t t-call="web.external_layout">
+		<!--<t t-call="web.external_layout_standard">-->
+			<div class="page">
+			
+
+			</div>
+		</t>
+	</template>
+</odoo>

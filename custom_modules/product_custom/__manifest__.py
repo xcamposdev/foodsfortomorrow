@@ -25,6 +25,7 @@
     'data': [
         # report
         'reports/fichatecnica_report.xml',
+        'reports/fichatecnica.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
