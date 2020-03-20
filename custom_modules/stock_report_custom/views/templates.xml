@@ -1,0 +1,12 @@
+﻿<odoo>
+	<data>
+		<template id="report_picking_custom" inherit_id="stock.report_picking">
+		
+            <xpath expr="//div[@class='row']" position="replace">
+                
+            </xpath>
+			
+		</template>	
+    </data>
+</odoo>
+    
