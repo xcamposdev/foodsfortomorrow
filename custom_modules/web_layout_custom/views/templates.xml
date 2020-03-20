@@ -2,13 +2,13 @@
     <data>
         <template id="external_layout_boxed_custom" inherit_id="web.external_layout_boxed">
 		
-            <xpath expr="//div[@class='header o_boxed_header']" position="replace">
+            <!--<xpath expr="//div[@class='header o_boxed_header']" position="replace">
                 
             </xpath>
 			
 			<xpath expr="//div[@class='footer o_boxed_footer']" position="replace">
 				
-			</xpath>
+			</xpath>-->
             
         </template>
     </data>
