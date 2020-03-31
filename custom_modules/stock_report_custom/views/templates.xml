@@ -43,7 +43,7 @@
             <xpath expr="//div[@class='row mt48 mb32']" position="replace">
                 <div class="row mt48 mb32">
                     <div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="div_origin">
-                        <strong>Pedido de venta:</strong>
+                        <strong>Pedido de venta Foods:</strong>
                         <p t-field="o.origin"/>
                     </div>
                     <div t-if="o.picking_type_id.code=='incoming'" class="col-auto" name="div_origin">
@@ -51,8 +51,12 @@
                         <p t-field="o.origin"/>
                     </div>
                     <div class="col-auto" name="div_sched_date">
-                        <strong>Fecha prevista:</strong>
-                        <p t-field="o.scheduled_date" t-options='{"format": "MM/dd/yyyy"}'/>
+                        <strong>Fecha prevista entrega:</strong>
+                        <p t-field="o.scheduled_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                    </div>
+					<div class="col-auto" name="div_sched_date">
+                        <strong>Contacto email Foods:</strong>
+                        <p>pedidos@foodsfortomorrow.com</p>
                     </div>
                 </div>
             </xpath>
@@ -95,7 +99,7 @@
                                         <span t-field="ml.lot_id.name"/>
                                     </td>
                                     <td class="text-center h6">
-                                        <span t-field="ml.lot_id.life_date" t-options='{"format": "MM/dd/yyyy"}'/>
+                                        <span t-field="ml.lot_id.life_date" t-options='{"format": "dd/MM/yyyy"}'/>
                                     </td>
                                 </tr>
                             </t>
@@ -110,30 +114,43 @@
                     <div t-field="o.move_ids_without_package[0].partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
                     <br/>
                 </div>
-                <div class="col-6">
-                    <span><strong>Datos logísticos:</strong></span>
+				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+					<span><strong>Total bultos:</strong></span>
+					<t t-set="total_bultos" t-value="0"/>
+					<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+						<t t-set="total_bultos" t-value="total_bultos + int(ml.product_uom_qty)"/>
+					</t>
+					<span t-field="total_bultos"/>
                     <br/>
-                    <span>Peso UMB (gr):</span>
-                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_umb_gr"/>
-                    <span>Peso Pallet (kg):</span>
-                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_pallet_kg"/>
-                    <br/>
-                </div>
-                <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+				</div>
+				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
                     <span><strong>Horario entrega:</strong></span>
                     <div t-field="o.partner_id.x_studio_horario_de_entrega"/>
                     <br/>
                 </div>
-                <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
                     <span><strong>Comentarios:</strong></span>
                     <div t-field="o.note"/>
+                </div>
+                <div class="col-6" t-if="o.picking_type_id.code=='outgoing'">
+					<span><strong>Datos logísticos:</strong></span><br/>
+					<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+						<span>Código producto:</span>
+						<div t-field="ml.product_id.default_code"/>
+						<span>Peso UMB (gr):</span>
+						<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
+						<span>Peso Pallet (kg):</span>
+						<div t-field="ml.product_id.x_studio_peso_pallet_kg"/>
+						<br/>
+					</t>
+                    <br/>
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span><strong>Dirección almacen envío:</strong></span>
                     <div t-field="o.location_dest_id"/>
                     <br/>
                 </div>
-                <div class="col-6">
+                <div class="col-6" t-if="o.carrier_id">
                     <span><strong>Transportista:</strong></span>
                     <div t-field="o.carrier_id"/>
                     <br/>
