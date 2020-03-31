@@ -118,34 +118,36 @@
 					<span><strong>Total bultos:</strong></span>
 					<t t-set="total_bultos" t-value="0"/>
 					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
-						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
-							<t t-set="total_bultos" t-value="total_bultos + int(ml.product_uom_qty)"/>
-						</t>
+						<t t-set="total_bultos" t-value="total_bultos + int(move.quantity_done)"/>
 					</t>
 					<span><t t-esc="total_bultos"/></span>
                     <br/>
+					<br/>
 				</div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
                     <span><strong>Horario entrega:</strong></span>
                     <div t-field="o.partner_id.x_studio_horario_de_entrega"/>
                     <br/>
+					<br/>
                 </div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
                     <span><strong>Comentarios:</strong></span>
                     <div t-field="o.note"/>
+					<br/>
                 </div>
                 <div class="col-6" t-if="o.picking_type_id.code=='outgoing'">
 					<span><strong>Datos logísticos:</strong></span><br/>
-					<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
-						<span>Código producto:</span>
-						<div t-field="ml.product_id.default_code"/>
-						<span>Peso UMB (gr):</span>
-						<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
-						<span>Peso Pallet (kg):</span>
-						<div t-field="ml.product_id.x_studio_peso_pallet_kg"/>
-						<br/>
+					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+							<span>Código producto:</span>
+							<div t-field="ml.product_id.default_code"/>
+							<span>Peso UMB (gr):</span>
+							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
+							<span>Peso Pallet (kg):</span>
+							<div t-field="ml.product_id.x_studio_peso_pallet_kg"/>
+							<br/>
+						</t>
 					</t>
-                    <br/>
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span><strong>Dirección almacen envío:</strong></span>
