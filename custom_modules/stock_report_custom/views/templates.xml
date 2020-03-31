@@ -117,8 +117,10 @@
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
 					<span><strong>Total bultos:</strong></span>
 					<t t-set="total_bultos" t-value="0"/>
-					<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
-						<t t-set="total_bultos" t-value="total_bultos + int(ml.product_uom_qty)"/>
+					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+							<t t-set="total_bultos" t-value="total_bultos + int(ml.product_uom_qty)"/>
+						</t>
 					</t>
 					<span><t t-esc="total_bultos"/></span>
                     <br/>
