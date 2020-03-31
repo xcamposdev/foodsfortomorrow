@@ -120,7 +120,7 @@
 					<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
 						<t t-set="total_bultos" t-value="total_bultos + int(ml.product_uom_qty)"/>
 					</t>
-					<span t-field="total_bultos"/>
+					<span><t t-esc="total_bultos"/></span>
                     <br/>
 				</div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
