@@ -2,6 +2,8 @@
 	<data>
 		<template id="report_picking_custom" inherit_id="stock.report_picking">
 		
+			<xpath expr="//div[@class='row justify-content-end mb16']" position="replace"/>
+		
             <xpath expr="//div[@class='row']" position="replace">
                 <div class="row">
                     <div class="col-6" name="div_outgoing_address">
