@@ -112,9 +112,9 @@
                     <span><strong>Datos logísticos:</strong></span>
                     <br/>
                     <span>Peso UMB (gr):</span>
-                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_bruto_2"/>
+                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_umb_gr"/>
                     <span>Peso Pallet (kg):</span>
-                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_neto_2"/>
+                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_pallet_kg"/>
                     <br/>
                 </div>
                 <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
