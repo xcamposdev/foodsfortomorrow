@@ -32,6 +32,12 @@
                 </div>
             </xpath>
             
+            <xpath expr="//h1[@class='mt0 float-left']" position="replace">
+                <h2 t-if="o.picking_type_id.code=='outgoing'" class="mt0 float-left">Albarán de entrega:</h2>
+                <h2 t-if="o.picking_type_id.code=='incoming'" class="mt0 float-left">Albarán de recepción:</h2>
+                <h2 t-field="o.name" class="mt0 float-left"/>
+            </xpath>
+            
             <xpath expr="//div[@class='row mt48 mb32']" position="replace">
                 <div class="row mt48 mb32">
                     <div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="div_origin">
@@ -39,7 +45,7 @@
                         <p t-field="o.origin"/>
                     </div>
                     <div t-if="o.picking_type_id.code=='incoming'" class="col-auto" name="div_origin">
-                        <strong>Pedido:</strong>
+                        <strong>Solicitud de compra:</strong>
                         <p t-field="o.origin"/>
                     </div>
                     <div class="col-auto" name="div_sched_date">
@@ -121,7 +127,7 @@
                     <div t-field="o.note"/>
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
-                    <span><strong>Dirección almacén recepción:</strong></span>
+                    <span><strong>Dirección almacen envío:</strong></span>
                     <div t-field="o.location_dest_id"/>
                     <br/>
                 </div>
@@ -139,7 +145,7 @@
             <xpath expr="//p[@t-field='o.note']" position="replace"/>
 			
 			
-		</template>	
+		</template>		
     </data>
 </odoo>
     
