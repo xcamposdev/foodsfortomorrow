@@ -1,0 +1,11 @@
+﻿<odoo>
+	<data>
+		<template id="report_saleorder_document_custom" inherit_id="sale.report_saleorder_document">
+		
+			<xpath expr="//div[@class='row']" position="replace">
+                
+            </xpath>
+		
+        </template>		
+	</data>
+</odoo>

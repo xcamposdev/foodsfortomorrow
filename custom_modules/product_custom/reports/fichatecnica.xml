@@ -1,0 +1,254 @@
+<?xml version="1.0"?>
+<odoo>
+	<template id="report_fichatecnica">
+		<t t-call="web.html_container">
+            <t t-foreach="docs" t-as="doc">
+                <div class="page">
+                    <div>
+                    <span>Nombre producto</span>
+                        <p class="m-0" t-field="doc.name"/>
+                    </div>
+                    <table style="text-align:center">
+                        <tr>
+                            <th style="text-align:left">Información de producto</th>
+                            <th>Valores</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Código articulo</td>
+                            <td>
+                                <p t-field="doc.default_code"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Denominación</td>
+                            <td> 
+                                <p t-field="doc.x_studio_denominacin"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Tipo producto</td>
+                            <td> 
+                                <p t-field="doc.categ_id"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Cantidad neta</td>
+                            <td> 
+                                <p t-field="doc.x_studio_peso_neto_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Descripción</td>
+                            <td> 
+                                <p t-field="doc.x_studio_field_PeKe1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Ingredientes</td>
+                            <td> 
+                                <p t-field="doc.x_studio_ingredientes"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">¿Puede contener trazas?</td>
+                            <td> 
+                                <p t-field="doc.x_studio_puede_contener_trazas_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Temp. almacenaje</td>
+                            <td> 
+                                <p t-field="doc.x_studio_temperatura_almacenaje_c"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Vida útil congelado</td>
+                            <td> 
+                                <p t-field="doc.x_studio_vida_til_congelado"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Vida útil +4ºC</td>
+                            <td> 
+                                <p t-field="doc.x_studio_vida_til_4c"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Consumo preferente una vez descongelado</td>
+                            <td> 
+                                <p t-field="doc.x_studio_consumo_preferente_una_vez_descongelado"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Comentarios</td>
+                            <td> 
+                                <p t-field="doc.x_studio_comentarios_3"/>
+                            </td>
+                        </tr>
+                    </table>
+                    <table style="text-align:center">
+                        <tr>
+                            <th style="text-align:left">Información nutricional</th>
+                            <th>Valores medios por 100gr de producto</th>
+                            <th>%IR</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Energía: Kcal (kJ)</td>
+                            <td>
+                                <p t-field="doc.x_studio_valor_energtico_kcal"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_valor_energtico_kcal_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Grasas: gr</td>
+                            <td>
+                                <p t-field="doc.x_studio_grasas_g"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_grasas_g_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">de las cuales saturadas: gr</td>
+                            <td>
+                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Hidratos de carbono: gr</td>
+                            <td>
+                                <p t-field="doc.x_studio_hidratos_de_carbono_g"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_hidratos_de_carbono_g_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">de los cuales azúcares: gr</td>
+                            <td><p t-field="doc.x_studio_de_los_cuales_azcares_g"/></td>
+                            <td><p t-field="doc.x_studio_de_los_cuales_azcares_g_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Fibra Alimentaria: gr</td>
+                            <td><p t-field="doc.x_studio_fibra_alimentaria_g"/></td>
+                            <td><p t-field="doc.x_studio_fibra_alimentaria_g_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Proteínas: gr</td>
+                            <td><p t-field="doc.x_studio_protenas_g"/></td>
+                            <td><p t-field="doc.x_studio_protenas_g_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Sal: gr</td>
+                            <td><p t-field="doc.x_studio_sal_g"/></td>
+                            <td><p t-field="doc.x_studio_sal_g_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Comentarios: </td>
+                            <td><p t-field="doc.x_studio_comentarios_nutricionales"/></td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center">
+                        <tr>
+                            <th style="text-align:left">Alérgenos o Intolerancias</th>
+                            <th>Alérgenos Directos</th>
+                            <th>Alérgenos Indirectos</th>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Gluten</td>
+                            <td>
+                                <p t-field="doc.x_studio_gluten"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_gluten_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Crustáceos</td>
+                            <td>
+                                <p t-field="doc.x_studio_crustceos"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_crustceos_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Huevos</td>
+                            <td>
+                                <p t-field="doc.x_studio_huevos"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_huevos_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Pescado</td>
+                            <td>
+                                <p t-field="doc.x_studio_pescado"/>
+                            </td>
+                            <td>
+                                <p t-field="doc.x_studio_pescado_1"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Cacahuetes</td>
+                            <td><p t-field="doc.x_studio_cacahuetes"/></td>
+                            <td><p t-field="doc.x_studio_cacahuetes_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Soja</td>
+                            <td><p t-field="doc.x_studio_soja"/></td>
+                            <td><p t-field="doc.x_studio_soja_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Leche</td>
+                            <td><p t-field="doc.x_studio_leche"/></td>
+                            <td><p t-field="doc.x_studio_leche_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Frutos de Cáscara</td>
+                            <td><p t-field="doc.x_studio_frutos_de_cscara"/></td>
+                            <td><p t-field="doc.x_studio_frutos_de_cscara_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Apio</td>
+                            <td><p t-field="doc.x_studio_apio"/></td>
+                            <td><p t-field="doc.x_studio_apio_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Mostaza</td>
+                            <td><p t-field="doc.x_studio_mostaza"/></td>
+                            <td><p t-field="doc.x_studio_mostaza_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Granos de Sésamo</td>
+                            <td><p t-field="doc.x_studio_granos_de_ssamo"/></td>
+                            <td><p t-field="doc.x_studio_granos_de_ssamo_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Dióxido de Azufre y Sulfitos</td>
+                            <td><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos"/></td>
+                            <td><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Lupino</td>
+                            <td><p t-field="doc.x_studio_lupino"/></td>
+                            <td><p t-field="doc.x_studio_lupino_1"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left">Moluscos</td>
+                            <td><p t-field="doc.x_studio_moluscos"/></td>
+                            <td><p t-field="doc.x_studio_moluscos_1"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+		</t>
+	</template>
+</odoo>

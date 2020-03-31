@@ -1,0 +1,21 @@
+<odoo>
+    <data>
+        <template id="external_layout_boxed_custom" inherit_id="web.external_layout_boxed">
+			
+			<xpath expr="//div[@t-attf-class='footer o_boxed_footer o_company_#{company.id}_layout']" position="replace">
+				<div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout">
+                    <div class="text-center">
+                        <!--<ul class="list-inline">
+                            <li t-if="company.email" class="list-inline-item">Correo: <span t-field="company.email"/></li>
+                        </ul>-->
+                        <div t-field="company.report_footer"/>
+                        <div t-if="report_type == 'pdf'">
+                            Página: <span class="page"/> / <span class="topage"/>
+                        </div>
+                    </div>
+                </div>
+			</xpath>
+            
+        </template>
+    </data>
+</odoo>
