@@ -3,8 +3,141 @@
 		<template id="report_picking_custom" inherit_id="stock.report_picking">
 		
             <xpath expr="//div[@class='row']" position="replace">
-                
+                <div class="row">
+                    <div class="col-6" name="div_outgoing_address">
+                        <!--<div t-if="o.move_ids_without_package and o.move_ids_without_package[0].partner_id and o.move_ids_without_package[0].partner_id.id != o.partner_id.id">
+                            <span><strong>Dirección entrega:</strong></span>
+                            <div t-field="o.move_ids_without_package[0].partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                        </div>
+                        <div t-if="o.picking_type_id.code != 'internal' and (not o.move_ids_without_package or not o.move_ids_without_package[0].partner_id) and o.picking_type_id.warehouse_id.partner_id">
+                            <span><strong>Dirección almacén origen:</strong></span>
+                            <div t-field="o.picking_type_id.warehouse_id.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                        </div>
+                    </div>
+                    <div class="col-5 offset-1" name="div_incoming_address">
+                        <div t-if="o.picking_type_id.code=='incoming' and o.partner_id">
+                            <span><strong>Dirección recepción:</strong></span>
+                        </div>
+                        <div t-if="o.picking_type_id.code=='internal' and o.partner_id">
+                            <span><strong>Dirección almacén:</strong></span>
+                        </div>
+                        <div t-if="o.picking_type_id.code=='outgoing' and o.partner_id">
+                            <span><strong>Dirección almacén destino:</strong></span>
+                        </div>
+                        <div t-if="o.partner_id" name="partner_header">
+                            <div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                            <p t-if="o.sudo().partner_id.vat"><t t-esc="o.company_id.country_id.vat_label or 'Tax ID'"/>: <span t-field="o.sudo().partner_id.vat"/></p>
+                        </div>-->
+                    </div>
+                </div>
             </xpath>
+            
+            <xpath expr="//div[@class='row mt48 mb32']" position="replace">
+                <div class="row mt48 mb32">
+                    <div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="div_origin">
+                        <strong>Pedido de venta:</strong>
+                        <p t-field="o.origin"/>
+                    </div>
+                    <div t-if="o.picking_type_id.code=='incoming'" class="col-auto" name="div_origin">
+                        <strong>Pedido:</strong>
+                        <p t-field="o.origin"/>
+                    </div>
+                    <div class="col-auto" name="div_sched_date">
+                        <strong>Fecha prevista:</strong>
+                        <p t-field="o.scheduled_date" t-options='{"format": "MM/dd/yyyy"}'/>
+                    </div>
+                </div>
+            </xpath>
+            
+            <xpath expr="//table[@class='table table-sm']" position="replace">
+                <table class="table table-sm" t-if="o.move_line_ids and o.move_ids_without_package">
+                    <t t-set="has_barcode" t-value="any([move_ids_without_package.product_id and move_ids_without_package.product_id.sudo().barcode or move_ids_without_package.package_id for move_ids_without_package in o.move_line_ids])"/>
+                    <t t-set="has_serial_number" t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id or ml.lot_name)" groups="stock.group_production_lot"/>
+                    <thead>
+                        <tr>
+                            <th name="th_product">
+                                <strong>Producto</strong>
+                            </th>
+                            <th name="th_qty">
+                                <strong>Cantidad</strong>
+                            </th>
+                            <th name="th_serial_number">
+                                <strong>Lote</strong>
+                            </th>
+                            <th name="th_life_date">
+                                <strong>Fecha caducidad</strong>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+                            <!-- In case you come accross duplicated lines, ask NIM or LAP -->
+                            <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+                                <tr>
+                                    <td>
+                                        <span t-field="ml.product_id.display_name"/><br/>
+                                        <span t-field="ml.product_id.description_picking"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="o.state != 'done'" t-field="ml.product_uom_qty"/>
+                                        <span t-if="o.state == 'done'" t-field="ml.qty_done"/>
+                                        <span t-field="ml.product_uom_id" groups="uom.group_uom"/>
+                                    </td>
+                                    <td class="text-center h6" >
+                                        <span t-field="ml.lot_id.name"/>
+                                    </td>
+                                    <td class="text-center h6">
+                                        <span t-field="ml.lot_id.life_date" t-options='{"format": "MM/dd/yyyy"}'/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>
+                    </tbody>
+                </table>
+            </xpath>
+            
+            <xpath expr="//table[@class='table table-sm']" position="after">
+                <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+                    <span><strong>Dirección entrega:</strong></span>
+                    <div t-field="o.move_ids_without_package[0].partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
+                    <br/>
+                </div>
+                <div class="col-6">
+                    <span><strong>Datos logísticos:</strong></span>
+                    <br/>
+                    <span>Peso UMB (gr):</span>
+                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_bruto_2"/>
+                    <span>Peso Pallet (kg):</span>
+                    <div t-field="o.move_ids_without_package[0].product_id.x_studio_peso_neto_2"/>
+                    <br/>
+                </div>
+                <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+                    <span><strong>Horario entrega:</strong></span>
+                    <div t-field="o.partner_id.x_studio_horario_de_entrega"/>
+                    <br/>
+                </div>
+                <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+                    <span><strong>Comentarios:</strong></span>
+                    <div t-field="o.note"/>
+                </div>
+                <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
+                    <span><strong>Dirección almacén recepción:</strong></span>
+                    <div t-field="o.location_dest_id"/>
+                    <br/>
+                </div>
+                <div class="col-6">
+                    <span><strong>Transportista:</strong></span>
+                    <div t-field="o.carrier_id"/>
+                    <br/>
+                </div>
+            </xpath>
+            
+            <!--<xpath expr="//table[@t-if='o.package_level_ids and o.picking_type_entire_packs and o.state in ['assigned', 'done']']" position="replace"/>
+            
+            <xpath expr="//p[@t-if='o.state in ['draft', 'waiting', 'confirmed'] or no_reserved_product']" position="replace"/>-->
+            
+            <xpath expr="//p[@t-field='o.note']" position="replace"/>
+			
 			
 		</template>	
     </data>
