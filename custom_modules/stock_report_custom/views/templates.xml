@@ -125,6 +125,16 @@
 					<br/>
 				</div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
+					<span><strong>Peso total (gr):</strong></span>
+					<t t-set="peso_total" t-value="float(0)"/>
+					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+						<t t-set="peso_total" t-value="peso_total + (move.product_id.x_studio_peso_umb_gr * move.quantity_done)"/>
+					</t>
+					<span><t t-esc="peso_total"/></span>
+                    <br/>
+					<br/>
+				</div>
+				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
                     <span><strong>Horario entrega:</strong></span>
                     <div t-field="o.partner_id.x_studio_horario_de_entrega"/>
                     <br/>
@@ -143,8 +153,6 @@
 							<div t-field="ml.product_id.default_code"/>
 							<span>Peso UMB (gr):</span>
 							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
-							<span>Peso Pallet (kg):</span>
-							<div t-field="ml.product_id.x_studio_peso_pallet_kg"/>
 							<br/>
 						</t>
 					</t>
