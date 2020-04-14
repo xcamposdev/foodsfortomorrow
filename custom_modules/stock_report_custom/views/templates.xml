@@ -147,6 +147,17 @@
                 </div>
                 <div class="col-6" t-if="o.picking_type_id.code=='outgoing'">
 					<span><strong>Datos logísticos:</strong></span><br/>
+                    <ul style="display:inline; padding-left=:3px; padding-right:3px">
+                        <t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+                            <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+                                <li style="display:inline; padding-left=:3px; padding-right:3px">
+                                    <span><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Peso UMB (gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/>//</span></span>
+                                </li>
+                            </t>
+                        </t>
+                    </ul>
+                    <br/>
+					<!--<span><strong>Datos logísticos:</strong></span><br/>
 					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
 						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
 							<span>Código producto:</span>
@@ -155,7 +166,7 @@
 							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
 							<br/>
 						</t>
-					</t>
+					</t>-->
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span><strong>Dirección almacen envío:</strong></span>
