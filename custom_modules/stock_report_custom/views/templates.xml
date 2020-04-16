@@ -151,7 +151,7 @@
                         <t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
                             <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
                                 <li style="display:inline; padding-left=:3px; padding-right:3px">
-                                    <span><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Peso UMB (gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/>//</span></span>
+                                    <span><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Peso UMB (gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/><span> Medidas UMB: Largo (cm): </span><span><t t-esc="ml.product_id.x_studio_largo_cm"/></span><span> Alto (cm): </span><span><t t-esc="ml.product_id.x_studio_alto_cm"/></span><span> Ancho (cm): </span><span><t t-esc="ml.product_id.x_studio_ancho_cm"/></span>//</span></span>
                                 </li>
                             </t>
                         </t>
