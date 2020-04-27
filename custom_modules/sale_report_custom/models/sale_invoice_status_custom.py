@@ -44,11 +44,11 @@ class SaleOrder(models.Model):
             line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
             if order.state not in ('sale', 'done'):
                 order.invoice_status = 'no'
+            elif order.invoice_count > 0:
+                order.invoice_status = 'invoiced'
             elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
                 order.invoice_status = 'to invoice'
             #elif line_invoice_status and all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
-            elif order.invoice_count > 0:
-                order.invoice_status = 'invoiced'
             elif line_invoice_status and all(invoice_status in ('invoiced', 'upselling') for invoice_status in line_invoice_status):
                 order.invoice_status = 'upselling'
             else:
@@ -82,11 +82,11 @@ class SaleOrder(models.Model):
             line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
             if order.state not in ('sale', 'done'):
                 order.invoice_status = 'no'
+            elif order.invoice_count > 0:
+                order.invoice_status = 'invoiced'
             elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
                 order.invoice_status = 'to invoice'
             #elif line_invoice_status and all(invoice_status == 'invoiced' for invoice_status in line_invoice_status):
-            elif order.invoice_count > 0:
-                order.invoice_status = 'invoiced'
             elif line_invoice_status and all(invoice_status in ('invoiced', 'upselling') for invoice_status in line_invoice_status):
                 order.invoice_status = 'upselling'
             else:
