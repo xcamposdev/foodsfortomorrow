@@ -35,27 +35,33 @@
             </xpath>
             
             <xpath expr="//h1[@class='mt0 float-left']" position="replace">
-                <h2 t-if="o.picking_type_id.code=='outgoing'" class="mt0 float-left">Albarán de entrega:</h2>
-                <h2 t-if="o.picking_type_id.code=='incoming'" class="mt0 float-left">Albarán de recepción:</h2>
+                <h2 t-if="o.picking_type_id.code=='outgoing' and o.partner_id.lang == 'es_ES'" class="mt0 float-left">Albarán de entrega:</h2>
+				<h2 t-if="o.picking_type_id.code=='outgoing' and o.partner_id.lang == 'en_US'" class="mt0 float-left">Delivery note:</h2>
+                <h2 t-if="o.picking_type_id.code=='incoming' and o.partner_id.lang == 'es_ES'" class="mt0 float-left">Albarán de recepción:</h2>
+				<h2 t-if="o.picking_type_id.code=='incoming' and o.partner_id.lang == 'en_US'" class="mt0 float-left">Reception note:</h2>
                 <h2 t-field="o.name" class="mt0 float-left"/>
             </xpath>
             
             <xpath expr="//div[@class='row mt48 mb32']" position="replace">
                 <div class="row mt48 mb32">
                     <div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="div_origin">
-                        <strong>Pedido de venta Foods:</strong>
+                        <strong t-if="o.partner_id.lang == 'es_ES'">Pedido de venta Foods:</strong>
+						<strong t-if="o.partner_id.lang == 'en_US'">Sale order Foods:</strong>
                         <p t-field="o.origin"/>
                     </div>
                     <div t-if="o.picking_type_id.code=='incoming'" class="col-auto" name="div_origin">
-                        <strong>Solicitud de compra:</strong>
+                        <strong t-if="o.partner_id.lang == 'es_ES'">Solicitud de compra:</strong>
+						<strong t-if="o.partner_id.lang == 'en_US'">Purchase order:</strong>
                         <p t-field="o.origin"/>
                     </div>
                     <div class="col-auto" name="div_sched_date">
-                        <strong>Fecha prevista entrega:</strong>
+                        <strong t-if="o.partner_id.lang == 'es_ES'">Fecha prevista entrega:</strong>
+						<strong t-if="o.partner_id.lang == 'en_US'">Estimated delivery date:</strong>
                         <p t-field="o.scheduled_date" t-options='{"format": "dd/MM/yyyy"}'/>
                     </div>
 					<div class="col-auto" name="div_sched_date">
-                        <strong>Contacto email Foods:</strong>
+                        <strong t-if="o.partner_id.lang == 'es_ES'">Contacto email Foods:</strong>
+						<strong t-if="o.partner_id.lang == 'en_US'">Contact email Foods:</strong>
                         <p>pedidos@foodsfortomorrow.com</p>
                     </div>
                 </div>
@@ -68,16 +74,20 @@
                     <thead>
                         <tr>
                             <th name="th_product">
-                                <strong>Producto</strong>
+                                <strong t-if="o.partner_id.lang == 'es_ES'">Producto</strong>
+								<strong t-if="o.partner_id.lang == 'en_US'">Product</strong>
                             </th>
                             <th name="th_qty">
-                                <strong>Cantidad</strong>
+                                <strong t-if="o.partner_id.lang == 'es_ES'">Cantidad</strong>
+								<strong t-if="o.partner_id.lang == 'en_US'">Quantity</strong>
                             </th>
                             <th name="th_serial_number">
-                                <strong>Lote</strong>
+                                <strong t-if="o.partner_id.lang == 'es_ES'">Lote</strong>
+								<strong t-if="o.partner_id.lang == 'en_US'">Batch</strong>
                             </th>
                             <th name="th_life_date">
-                                <strong>Fecha caducidad</strong>
+                                <strong t-if="o.partner_id.lang == 'es_ES'">Fecha caducidad</strong>
+								<strong t-if="o.partner_id.lang == 'en_US'">Due date</strong>
                             </th>
                         </tr>
                     </thead>
@@ -110,12 +120,14 @@
             
             <xpath expr="//table[@class='table table-sm']" position="after">
                 <div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
-                    <span><strong>Dirección entrega:</strong></span>
+                    <span t-if="o.partner_id.lang == 'es_ES'"><strong>Dirección entrega:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Delivery address:</strong></span>
                     <div t-field="o.move_ids_without_package[0].partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True, &quot;phone_icons&quot;: True}"/>
                     <br/>
                 </div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
-					<span><strong>Total bultos:</strong></span>
+					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Total bultos:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Total packages:</strong></span>
 					<t t-set="total_bultos" t-value="0"/>
 					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
 						<t t-set="total_bultos" t-value="total_bultos + int(move.quantity_done)"/>
@@ -125,7 +137,8 @@
 					<br/>
 				</div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
-					<span><strong>Peso total (gr):</strong></span>
+					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Peso total (gr):</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Total weight (gr):</strong></span>
 					<t t-set="peso_total" t-value="float(0)"/>
 					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
 						<t t-set="peso_total" t-value="peso_total + (move.product_id.x_studio_peso_umb_gr * move.quantity_done)"/>
@@ -135,23 +148,27 @@
 					<br/>
 				</div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
-                    <span><strong>Horario entrega:</strong></span>
+                    <span t-if="o.partner_id.lang == 'es_ES'"><strong>Horario entrega:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Delivery time:</strong></span>
                     <div t-field="o.partner_id.x_studio_horario_de_entrega"/>
                     <br/>
 					<br/>
                 </div>
 				<div t-if="o.picking_type_id.code=='outgoing'" class="col-6">
-                    <span><strong>Comentarios:</strong></span>
+                    <span t-if="o.partner_id.lang == 'es_ES'"><strong>Comentarios:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Notes:</strong></span>
                     <div t-field="o.note"/>
 					<br/>
                 </div>
                 <div class="col-6" t-if="o.picking_type_id.code=='outgoing'">
-					<span><strong>Datos logísticos:</strong></span><br/>
+					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Datos logísticos:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Logistic data:</strong></span><br/>
                     <ul style="display:inline; padding-left=:3px; padding-right:3px">
                         <t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
                             <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
                                 <li style="display:inline; padding-left=:3px; padding-right:3px">
-                                    <span><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Peso UMB (gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/><span> Medidas UMB: Largo (cm): </span><span><t t-esc="ml.product_id.x_studio_largo_cm"/></span><span> Alto (cm): </span><span><t t-esc="ml.product_id.x_studio_alto_cm"/></span><span> Ancho (cm): </span><span><t t-esc="ml.product_id.x_studio_ancho_cm"/></span>//</span></span>
+                                    <span t-if="o.partner_id.lang == 'es_ES'"><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Peso UMB (gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/><span> Medidas UMB: Largo (cm): </span><span><t t-esc="ml.product_id.x_studio_largo_cm"/></span><span> Alto (cm): </span><span><t t-esc="ml.product_id.x_studio_alto_cm"/></span><span> Ancho (cm): </span><span><t t-esc="ml.product_id.x_studio_ancho_cm"/></span>//</span></span>
+									<span t-if="o.partner_id.lang == 'en_US'"><span>Product code: </span><span><t t-esc="ml.product_id.default_code"/></span><span> UMB weight(gr): <t t-esc="ml.product_id.x_studio_peso_umb_gr"/><span> UMB measurements: Length (cm): </span><span><t t-esc="ml.product_id.x_studio_largo_cm"/></span><span> High (cm): </span><span><t t-esc="ml.product_id.x_studio_alto_cm"/></span><span> Width (cm): </span><span><t t-esc="ml.product_id.x_studio_ancho_cm"/></span>//</span></span>
                                 </li>
                             </t>
                         </t>
@@ -169,12 +186,14 @@
 					</t>-->
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
-                    <span><strong>Dirección almacen envío:</strong></span>
+                    <span t-if="o.partner_id.lang == 'es_ES'"><strong>Dirección almacen envío:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Delivery warehouse address:</strong></span>
                     <div t-field="o.location_dest_id"/>
                     <br/>
                 </div>
                 <div class="col-6" t-if="o.carrier_id">
-                    <span><strong>Transportista:</strong></span>
+                    <span t-if="o.partner_id.lang == 'es_ES'"><strong>Transportista:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Carrier:</strong></span>
                     <div t-field="o.carrier_id"/>
                     <br/>
                 </div>
