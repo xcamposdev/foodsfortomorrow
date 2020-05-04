@@ -185,6 +185,31 @@
 						</t>
 					</t>-->
                 </div>
+				<div class="col-6" t-if="o.picking_type_id.code=='incoming'">
+					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Datos logísticos:</strong></span>
+					<span t-if="o.partner_id.lang == 'en_US'"><strong>Logistic data:</strong></span><br/>
+                    <ul style="display:inline; padding-left=:3px; padding-right:3px">
+                        <t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+                            <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+                                <li style="display:inline; padding-left=:3px; padding-right:3px">
+                                    <span t-if="o.partner_id.lang == 'es_ES'"><span>Código producto: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Total cajas: </span><span><t t-esc="ml.product_id.x_studio_total_cajas_ud"/></span><span> Peso pallet: </span><span><t t-esc="ml.product_id.x_studio_peso_pallet_kg"/></span><span> Altura pallet: </span><span><t t-esc="ml.product_id.x_studio_altura_pallet_con_madera_cm"/></span><span> Tipo pallet: </span><span><t t-esc="ml.product_id.x_studio_tipo_pallet"/>//</span></span>
+									<span t-if="o.partner_id.lang == 'en_US'"><span>Product code: </span><span><t t-esc="ml.product_id.default_code"/></span><span> Total boxes: </span><span><t t-esc="ml.product_id.x_studio_total_cajas_ud"/></span><span> Package weight: </span><span><t t-esc="ml.product_id.x_studio_peso_pallet_kg"/></span><span> Package height: </span><span><t t-esc="ml.product_id.x_studio_altura_pallet_con_madera_cm"/></span><span> Package type: </span><span><t t-esc="ml.product_id.x_studio_tipo_pallet"/>//</span></span>
+                                </li>
+                            </t>
+                        </t>
+                    </ul>
+                    <br/>
+					<!--<span><strong>Datos logísticos:</strong></span><br/>
+					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
+						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
+							<span>Código producto:</span>
+							<div t-field="ml.product_id.default_code"/>
+							<span>Peso UMB (gr):</span>
+							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
+							<br/>
+						</t>
+					</t>-->
+                </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span t-if="o.partner_id.lang == 'es_ES'"><strong>Dirección almacen envío:</strong></span>
 					<span t-if="o.partner_id.lang == 'en_US'"><strong>Delivery warehouse address:</strong></span>
