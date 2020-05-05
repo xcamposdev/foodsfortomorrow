@@ -4,249 +4,420 @@
 		<t t-call="web.html_container">
             <t t-foreach="docs" t-as="doc">
                 <div class="page">
-                    <div>
-                    <span>Nombre producto</span>
-                        <p class="m-0" t-field="doc.name"/>
-                    </div>
-                    <table style="text-align:center">
-                        <tr>
-                            <th style="text-align:left">Información de producto</th>
+
+                    <h1 class="m-0" t-field="doc.name"/>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white; border-collapse:collapse; border:1px solid black;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Información del producto</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;">Valores</th>
+                        </tr>
+                        <tr style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Denominación producto</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_denominacin"/>
+                            </td>
+                        </tr>
+                        <tr style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tipo producto</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_canal"/>
+                            </td>
+                        </tr>
+                        <tr style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Marca</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_marca"/>
+                            </td>
+                        </tr>
+                        <tr style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Dimensión por pieza</td>
+                            <td style="text-align:center; border-collapse:collapse; border:1px solid black;"> 
+                                <span>Largo: </span><p t-field="doc.x_studio_dimensin_por_pieza_largo_1"/>
+                                <span>Ancho: </span><p t-field="doc.x_studio_dimensin_por_pieza_ancho_1"/>
+                                <span>Alto: </span><p t-field="doc.x_studio_dimensin_por_pieza_alto_1"/>
+                                <span t-if="doc.x_studio_dimensin_por_pieza_dimetro_1">Diámetro: </span><p t-if="doc.x_studio_dimensin_por_pieza_dimetro_1" t-field="doc.x_studio_dimensin_por_pieza_dimetro_1"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Catacterísticas del Producto</th>
                             <th>Valores</th>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Código articulo</td>
-                            <td>
-                                <p t-field="doc.default_code"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Denominación</td>
-                            <td> 
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Denominación producto</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
                                 <p t-field="doc.x_studio_denominacin"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Tipo producto</td>
-                            <td> 
-                                <p t-field="doc.categ_id"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Cantidad neta</td>
-                            <td> 
-                                <p t-field="doc.x_studio_peso_neto_1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Descripción</td>
-                            <td> 
-                                <p t-field="doc.x_studio_field_PeKe1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Ingredientes</td>
-                            <td> 
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Ingredientes</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
                                 <p t-field="doc.x_studio_ingredientes"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">¿Puede contener trazas?</td>
-                            <td> 
-                                <p t-field="doc.x_studio_puede_contener_trazas_1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Temp. almacenaje</td>
-                            <td> 
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Temp. almacenaje</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
                                 <p t-field="doc.x_studio_temperatura_almacenaje_c"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Vida útil congelado</td>
-                            <td> 
-                                <p t-field="doc.x_studio_vida_til_congelado"/>
+                        <tr t-if="doc.x_studio_vida_til_congelado_18c_das">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Vida útil congelado</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_vida_til_congelado_18c_das"/>
+                            </td>
+                        </tr>
+                        <tr t-if="doc.x_studio_vida_til_refrigerado_4c_das">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Vida útil refrigerado</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_vida_til_refrigerado_4c_das"/>
+                            </td>
+                        </tr>
+                        <tr t-if="doc.x_studio_vida_til_ambiente_2025c_das_1">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Vida útil ambiente</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_vida_til_ambiente_2025c_das_1"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Vida útil +4ºC</td>
-                            <td> 
-                                <p t-field="doc.x_studio_vida_til_4c"/>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Consumo preferente una vez descongelado (horas)</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_consumo_preferente_una_vez_descongelado_dias"/>
+                            </td>
+                        </tr><tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Consumo preferente una vez abierto el envase (días)</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_consumo_preferente_una_vez_abierto_el_envase_das"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Consumo preferente una vez descongelado</td>
-                            <td> 
-                                <p t-field="doc.x_studio_consumo_preferente_una_vez_descongelado"/>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Cantidad neta (gr)</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_cantidad_neta_por_pieza_kg_1"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Comentarios</td>
-                            <td> 
-                                <p t-field="doc.x_studio_comentarios_3"/>
-                            </td>
-                        </tr>
-                    </table>
-                    <table style="text-align:center">
-                        <tr>
-                            <th style="text-align:left">Información nutricional</th>
-                            <th>Valores medios por 100gr de producto</th>
-                            <th>%IR</th>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Energía: Kcal (kJ)</td>
-                            <td>
-                                <p t-field="doc.x_studio_valor_energtico_kcal"/>
-                            </td>
-                            <td>
-                                <p t-field="doc.x_studio_valor_energtico_kcal_1"/>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Cantidad de contiene</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.name"/>
                             </td>
                         </tr>
                         <tr>
-                            <td style="text-align:left">Grasas: gr</td>
-                            <td>
-                                <p t-field="doc.x_studio_grasas_g"/>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Desarrollado por / Fabricado en</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"> 
+                                <p t-field="doc.x_studio_desarrollado_por_fabricado_en"/>
                             </td>
-                            <td>
-                                <p t-field="doc.x_studio_grasas_g_1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">de las cuales saturadas: gr</td>
-                            <td>
-                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g"/>
-                            </td>
-                            <td>
-                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g_1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Hidratos de carbono: gr</td>
-                            <td>
-                                <p t-field="doc.x_studio_hidratos_de_carbono_g"/>
-                            </td>
-                            <td>
-                                <p t-field="doc.x_studio_hidratos_de_carbono_g_1"/>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">de los cuales azúcares: gr</td>
-                            <td><p t-field="doc.x_studio_de_los_cuales_azcares_g"/></td>
-                            <td><p t-field="doc.x_studio_de_los_cuales_azcares_g_1"/></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Fibra Alimentaria: gr</td>
-                            <td><p t-field="doc.x_studio_fibra_alimentaria_g"/></td>
-                            <td><p t-field="doc.x_studio_fibra_alimentaria_g_1"/></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Proteínas: gr</td>
-                            <td><p t-field="doc.x_studio_protenas_g"/></td>
-                            <td><p t-field="doc.x_studio_protenas_g_1"/></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Sal: gr</td>
-                            <td><p t-field="doc.x_studio_sal_g"/></td>
-                            <td><p t-field="doc.x_studio_sal_g_1"/></td>
-                        </tr>
-                        <tr>
-                            <td style="text-align:left">Comentarios: </td>
-                            <td><p t-field="doc.x_studio_comentarios_nutricionales"/></td>
                         </tr>
                     </table>
                     
-                    <table style="text-align:center">
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;width:33%">Información nutricional</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;width:33%">Por 100gr</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;width:33%">%IR</th>
+                        </tr>
                         <tr>
-                            <th style="text-align:left">Alérgenos o Intolerancias</th>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Valor energético: Kcal</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_valor_energtico_kcal_1"/>
+                            </td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_valor_energtico_kcal"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Valor energético: KJ</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_valor_energtico_kj_1"/>
+                            </td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_valor_energtico_kj"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Grasas: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_grasas_g_1"/>
+                            </td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_grasas_g"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">de las cuales saturadas: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g_1"/>
+                            </td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_de_las_cuales_saturadas_g"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Hidratos de carbono: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_hidratos_de_carbono_g_1"/>
+                            </td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_hidratos_de_carbono_g"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">de los cuales azúcares: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_de_los_cuales_azcares_g_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_de_los_cuales_azcares_g"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Fibra Alimentaria: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_fibra_alimentaria_g_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_fibra_alimentaria_g"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Proteínas: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_protenas_g_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_protenas_g"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Sal: gr</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_sal_g_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_sal_g"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Potasio: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_potasio_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_potasio_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Hierro: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_hierro_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_hierro_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Magnesio: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_magnesio_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_magnesio_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Calcio: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_calcio_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_calcio_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Fósforo: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_fsforo_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_fsforo_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Zinc: mg</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_zinc_mg_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_zinc_mg"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Vitamina B12: ug</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_vitamina_b12_g_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_vitamina_b12_g"/></td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Comentarios: </td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_comentarios_nutricionales"/></td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Trazas a indicar</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_puede_contener_trazas_de"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Claims nutricionales</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_claims_nutricionales"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Alérgenos o Intolerancias</th>
                             <th>Alérgenos Directos</th>
                             <th>Alérgenos Indirectos</th>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Gluten</td>
-                            <td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Gluten</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_gluten"/>
                             </td>
-                            <td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_gluten_1"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Crustáceos</td>
-                            <td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Crustáceos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_crustceos"/>
                             </td>
-                            <td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_crustceos_1"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Huevos</td>
-                            <td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Huevos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_huevos"/>
                             </td>
-                            <td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_huevos_1"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Pescado</td>
-                            <td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Pescado</td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_pescado"/>
                             </td>
-                            <td>
+                            <td style="border-collapse:collapse; border:1px solid black;">
                                 <p t-field="doc.x_studio_pescado_1"/>
                             </td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Cacahuetes</td>
-                            <td><p t-field="doc.x_studio_cacahuetes"/></td>
-                            <td><p t-field="doc.x_studio_cacahuetes_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Cacahuetes</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_cacahuetes"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_cacahuetes_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Soja</td>
-                            <td><p t-field="doc.x_studio_soja"/></td>
-                            <td><p t-field="doc.x_studio_soja_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Soja</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_soja"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_soja_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Leche</td>
-                            <td><p t-field="doc.x_studio_leche"/></td>
-                            <td><p t-field="doc.x_studio_leche_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Leche</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_leche"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_leche_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Frutos de Cáscara</td>
-                            <td><p t-field="doc.x_studio_frutos_de_cscara"/></td>
-                            <td><p t-field="doc.x_studio_frutos_de_cscara_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Frutos de Cáscara</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_frutos_de_cscara"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_frutos_de_cscara_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Apio</td>
-                            <td><p t-field="doc.x_studio_apio"/></td>
-                            <td><p t-field="doc.x_studio_apio_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Apio</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_apio"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_apio_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Mostaza</td>
-                            <td><p t-field="doc.x_studio_mostaza"/></td>
-                            <td><p t-field="doc.x_studio_mostaza_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Mostaza</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_mostaza"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_mostaza_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Granos de Sésamo</td>
-                            <td><p t-field="doc.x_studio_granos_de_ssamo"/></td>
-                            <td><p t-field="doc.x_studio_granos_de_ssamo_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Granos de Sésamo</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_granos_de_ssamo"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_granos_de_ssamo_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Dióxido de Azufre y Sulfitos</td>
-                            <td><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos"/></td>
-                            <td><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Dióxido de Azufre y Sulfitos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_dixido_de_azufre_y_sulfitos_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Lupino</td>
-                            <td><p t-field="doc.x_studio_lupino"/></td>
-                            <td><p t-field="doc.x_studio_lupino_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Lupino</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_lupino"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_lupino_1"/></td>
                         </tr>
-                        <tr>
-                            <td style="text-align:left">Moluscos</td>
-                            <td><p t-field="doc.x_studio_moluscos"/></td>
-                            <td><p t-field="doc.x_studio_moluscos_1"/></td>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Moluscos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_moluscos"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_moluscos_1"/></td>
                         </tr>
                     </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Modo de empleo</th>
+                        </tr>
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;">Modo de preparación</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;">Tiempo de cocción aprox congelado</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;">Tiempo de cocción aprox descongelado</th>
+                            <th style="text-align:center; border-collapse:collapse; border:1px solid black;">Comentarios</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_modo_de_preparacin"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_congelado"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_descongelado"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_comentarios"/></td>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_modo_de_preparacin_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_congelado_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_descongelado_1"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_comentarios_1"/></td>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_modo_de_preparacin_2"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_congelado_2"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_tiempo_de_coccin_aprox_descongelado_2"/></td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_comentarios_2"/></td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Textos obligatorios</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_textos_obligatorios"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Poesía marketing</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="border-collapse:collapse; border:1px solid black;">
+                                <p t-field="doc.x_studio_poesa_de_marketing"/>
+                            </td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Apto para</th>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Veganos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_veganos"/></td>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Vegetarianos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_vegetarianos"/></td>
+                        </tr>
+                        <tr style="border-collapse:collapse; border:1px solid black;">
+                            <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Celíacos</td>
+                            <td style="border-collapse:collapse; border:1px solid black;"><p t-field="doc.x_studio_celacos"/></td>
+                        </tr>
+                    </table>
+                    
+                    <table style="text-align:center; border-collapse:collapse; border:1px solid black;">
+                        <tr style="background-color:black; color:white;">
+                            <th style="text-align:left; border-collapse:collapse; border:1px solid black;">Logotipos</th>
+                        </tr>
+                        
+                    </table>
+                    
                 </div>
             </t>
 		</t>
