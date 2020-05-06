@@ -64,6 +64,11 @@
 						<strong t-if="o.partner_id.lang == 'en_US'">Contact email Foods:</strong>
                         <p>pedidos@foodsfortomorrow.com</p>
                     </div>
+					<div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="customer_ref_div">
+                        <strong t-if="o.partner_id.lang == 'es_ES'">Referencia cliente:</strong>
+						<strong t-if="o.partner_id.lang == 'en_US'">Customer reference:</strong>
+                        <p t-field="o.sale_id.client_order_ref"/>
+                    </div>
                 </div>
             </xpath>
             
