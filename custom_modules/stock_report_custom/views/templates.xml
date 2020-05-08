@@ -78,9 +78,12 @@
                     <t t-set="has_serial_number" t-value="o.move_line_ids.filtered(lambda ml: ml.lot_id or ml.lot_name)" groups="stock.group_production_lot"/>
                     <thead>
                         <tr>
+                            <th name="th_sku">
+                                <strong>SKU</strong>
+                            </th>
                             <th name="th_product">
-                                <strong t-if="o.partner_id.lang == 'es_ES'">Producto</strong>
-								<strong t-if="o.partner_id.lang == 'en_US'">Product</strong>
+                                <strong t-if="o.partner_id.lang == 'es_ES'">Descripcion</strong>
+								<strong t-if="o.partner_id.lang == 'en_US'">Description</strong>
                             </th>
                             <th name="th_qty">
                                 <strong t-if="o.partner_id.lang == 'es_ES'">Cantidad</strong>
@@ -102,8 +105,11 @@
                             <t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
                                 <tr>
                                     <td>
-                                        <span t-field="ml.product_id.display_name"/><br/>
-                                        <span t-field="ml.product_id.description_picking"/>
+                                        <span t-field="ml.product_id.default_code"/>
+                                    </td>
+                                    <td>
+                                        <span t-if="o.partner_id.lang == 'es_ES'" t-field="ml.product_id.name"/>
+                                        <span t-if="o.partner_id.lang == 'en_US'" t-field="ml.product_id.x_studio_descripcin_producto_eng"/>
                                     </td>
                                     <td>
                                         <span t-if="o.state != 'done'" t-field="ml.product_uom_qty"/>
@@ -165,7 +171,7 @@
                     <div t-field="o.note"/>
 					<br/>
                 </div>
-                <div class="col-6" t-if="o.picking_type_id.code=='outgoing'">
+                <div class="row" t-if="o.picking_type_id.code=='outgoing'">
 					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Datos logísticos:</strong></span>
 					<span t-if="o.partner_id.lang == 'en_US'"><strong>Logistic data:</strong></span><br/>
                     <ul style="display:inline; padding-left=:3px; padding-right:3px">
@@ -179,18 +185,8 @@
                         </t>
                     </ul>
                     <br/>
-					<!--<span><strong>Datos logísticos:</strong></span><br/>
-					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
-						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
-							<span>Código producto:</span>
-							<div t-field="ml.product_id.default_code"/>
-							<span>Peso UMB (gr):</span>
-							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
-							<br/>
-						</t>
-					</t>-->
                 </div>
-				<div class="col-6" t-if="o.picking_type_id.code=='incoming'">
+				<div class="row" t-if="o.picking_type_id.code=='incoming'">
 					<span t-if="o.partner_id.lang == 'es_ES'"><strong>Datos logísticos:</strong></span>
 					<span t-if="o.partner_id.lang == 'en_US'"><strong>Logistic data:</strong></span><br/>
                     <ul style="display:inline; padding-left=:3px; padding-right:3px">
@@ -204,16 +200,6 @@
                         </t>
                     </ul>
                     <br/>
-					<!--<span><strong>Datos logísticos:</strong></span><br/>
-					<t t-foreach="o.move_ids_without_package.sorted(key=lambda m: m.product_id.id)" t-as="move">
-						<t t-foreach="move.move_line_ids.sorted(key=lambda ml: ml.location_id.id)" t-as="ml">
-							<span>Código producto:</span>
-							<div t-field="ml.product_id.default_code"/>
-							<span>Peso UMB (gr):</span>
-							<div t-field="ml.product_id.x_studio_peso_umb_gr"/>
-							<br/>
-						</t>
-					</t>-->
                 </div>
                 <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span t-if="o.partner_id.lang == 'es_ES'"><strong>Dirección almacen envío:</strong></span>
