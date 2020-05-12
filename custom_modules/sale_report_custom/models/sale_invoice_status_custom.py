@@ -82,7 +82,7 @@ class SaleOrder(models.Model):
             line_invoice_status = [d[1] for d in line_invoice_status_all if d[0] == order.id]
             if order.state not in ('sale', 'done'):
                 order.invoice_status = 'no'
-            elif order.invoice_count > 0:
+            elif order.invoice_count > 0 and order.x_studio_facturado:
                 order.invoice_status = 'invoiced'
             elif any(invoice_status == 'to invoice' for invoice_status in line_invoice_status):
                 order.invoice_status = 'to invoice'
@@ -91,4 +91,3 @@ class SaleOrder(models.Model):
                 order.invoice_status = 'upselling'
             else:
                 order.invoice_status = 'no'
- 
