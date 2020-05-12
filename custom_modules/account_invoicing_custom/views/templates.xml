@@ -38,7 +38,8 @@
                                 <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
                                     <t t-if="not line.display_type" name="account_invoice_line_accountable">
                                         <td name="account_invoice_line_name"><span t-field="line.name" t-options="{'widget': 'text'}"/></td>
-                                        <td name="account_invoice_line_origin"><span t-field="line.sale_line_ids[0].order_id"/></td>
+                                        <td t-if="line.sale_line_ids" name="account_invoice_line_origin"><span t-field="line.sale_line_ids[0].order_id"/></td>
+                                        <td t-if="not line.sale_line_ids" name="account_invoice_line_origin"><span t-field="o.invoice_origin"/></td>
                                         <td class="text-right">
                                             <span t-field="line.quantity"/>
                                             <span t-field="line.product_uom_id"  groups="uom.group_uom"/>
