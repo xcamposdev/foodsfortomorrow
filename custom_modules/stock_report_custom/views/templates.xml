@@ -62,7 +62,7 @@
 					<div class="col-auto" name="div_sched_date">
                         <strong t-if="o.partner_id.lang == 'es_ES'">Contacto email Foods:</strong>
 						<strong t-if="o.partner_id.lang == 'en_US'">Contact email Foods:</strong>
-                        <p>pedidos@foodsfortomorrow.com</p>
+                        <p>orders@foodsfortomorrow.com</p>
                     </div>
 					<div t-if="o.picking_type_id.code=='outgoing'" class="col-auto" name="customer_ref_div">
                         <strong t-if="o.partner_id.lang == 'es_ES'">Referencia cliente:</strong>
@@ -201,12 +201,12 @@
                     </ul>
                     <br/>
                 </div>
-                <div t-if="o.picking_type_id.code=='incoming'" class="col-6">
+                <!--<div t-if="o.picking_type_id.code=='incoming'" class="col-6">
                     <span t-if="o.partner_id.lang == 'es_ES'"><strong>Dirección almacen envío:</strong></span>
 					<span t-if="o.partner_id.lang == 'en_US'"><strong>Delivery warehouse address:</strong></span>
                     <div t-field="o.location_dest_id"/>
                     <br/>
-                </div>
+                </div>-->
                 <div class="col-6" t-if="o.carrier_id">
                     <span t-if="o.partner_id.lang == 'es_ES'"><strong>Transportista:</strong></span>
 					<span t-if="o.partner_id.lang == 'en_US'"><strong>Carrier:</strong></span>
