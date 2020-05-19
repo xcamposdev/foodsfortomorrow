@@ -52,3 +52,64 @@ class SaleOrderCustom0(models.Model):
         #         'partner_invoice_id':[('id','=',self.partner_id.parent_id.id)],
         #     },
         # }
+
+# class AccountCustom0(models.Model):
+#     _name = 'account.move'
+#     _inherit = 'account.move'
+
+#     @api.model
+#     def default_get(self, default_fields):
+#         # OVERRIDE linea 3455
+#         values = super(AccountMoveLine, self).default_get(default_fields)
+
+#         if 'account_id' in default_fields \
+#             and (self._context.get('journal_id') or self._context.get('default_journal_id')) \
+#             and not values.get('account_id') \
+#             and self._context.get('default_type') in self.move_id.get_inbound_types():
+#             # Fill missing 'account_id'.
+#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
+#             values['account_id'] = journal.default_credit_account_id.id
+#         elif 'account_id' in default_fields \
+#             and (self._context.get('journal_id') or self._context.get('default_journal_id')) \
+#             and not values.get('account_id') \
+#             and self._context.get('default_type') in self.move_id.get_outbound_types():
+#             # Fill missing 'account_id'.
+#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
+#             values['account_id'] = journal.default_debit_account_id.id
+#         elif self._context.get('line_ids') and any(field_name in default_fields for field_name in ('debit', 'credit', 'account_id', 'partner_id')):
+#             move = self.env['account.move'].new({'line_ids': self._context['line_ids']})
+
+#             # Suggest default value for debit / credit to balance the journal entry.
+#             balance = sum(line['debit'] - line['credit'] for line in move.line_ids)
+#             # if we are here, line_ids is in context, so journal_id should also be.
+#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
+#             currency = journal.exists() and journal.company_id.currency_id
+#             if currency:
+#                 balance = currency.round(balance)
+#             if balance < 0.0:
+#                 values.update({'debit': -balance})
+#             if balance > 0.0:
+#                 values.update({'credit': balance})
+
+#             # Suggest default value for 'partner_id'.
+#             if 'partner_id' in default_fields and not values.get('partner_id'):
+#                 if len(move.line_ids[-2:]) == 2 and  move.line_ids[-1].partner_id == move.line_ids[-2].partner_id != False:
+#                     values['partner_id'] = move.line_ids[-2:].mapped('partner_id').id
+
+#             # Suggest default value for 'account_id'.
+#             if 'account_id' in default_fields and not values.get('account_id'):
+#                 if len(move.line_ids[-2:]) == 2 and  move.line_ids[-1].account_id == move.line_ids[-2].account_id != False:
+#                     values['account_id'] = move.line_ids[-2:].mapped('account_id').id
+#         if values.get('display_type'):
+#             values.pop('account_id', None)
+#         if (values.get('partner_id')):
+#             partner = self.env['res.partner'].search([('id', '=', values.get('partner_id') )], limit=1)
+#             values['analytic_tag_ids'] = partner.x_studio_canal_de_venta_1_1.id
+#             if(partner):
+#                 if(partner.x_studio_canal_de_venta_1_1):
+#                     listOfValue = []
+#                     listOfValue.append(partner.x_studio_canal_de_venta_1_1.id)
+#                     values['analytic_tag_ids'] = listOfValue
+#                 if(partner.x_studio_canales_de_venta_23_1):
+#                     values['analytic_account_id'] = partner.x_studio_canales_de_venta_23_1.id
+#         return values
