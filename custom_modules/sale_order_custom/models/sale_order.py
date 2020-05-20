@@ -54,6 +54,7 @@ class SaleOrderCustom0(models.Model):
         return {
             'domain': {
                 'partner_invoice_id':[('id','=',self.partner_id.parent_id.id)],
+                'partner_shipping_id':['&',('parent_id','=',self.partner_id.id),('type','=','delivery')],
             },
         }
 
