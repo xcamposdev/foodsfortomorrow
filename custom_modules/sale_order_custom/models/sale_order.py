@@ -13,6 +13,51 @@ class SaleOrderCustom0(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
+    @api.onchange('partner_id')
+    def onchange_partner_id(self):
+        """
+        Update the following fields when the partner is changed:
+        - Pricelist
+        - Payment terms
+        - Invoice address
+        - Delivery address
+        """
+        if not self.partner_id:
+            self.update({
+                'partner_invoice_id': False,
+                'partner_shipping_id': False,
+                'fiscal_position_id': False,
+            })
+            return
+
+        addr = self.partner_id.address_get(['delivery', 'invoice'])
+        partner_user = self.partner_id.user_id or self.partner_id.commercial_partner_id.user_id
+        values = {
+            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
+            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
+            'partner_invoice_id': addr['invoice'],
+            'partner_shipping_id': addr['delivery'],
+        }
+        user_id = partner_user.id
+        if not self.env.context.get('not_self_saleperson'):
+            user_id = user_id or self.env.uid
+        if self.user_id.id != user_id:
+            values['user_id'] = user_id
+
+        if self.env['ir.config_parameter'].sudo().get_param('account.use_invoice_terms') and self.env.company.invoice_terms:
+            values['note'] = self.with_context(lang=self.partner_id.lang).env.company.invoice_terms
+        values['team_id'] = self.env['crm.team']._get_default_team_id(domain=['|', ('company_id', '=', self.company_id.id), ('company_id', '=', False)],user_id=user_id)
+
+        if self.partner_id and self.partner_id.parent_id:
+            values['partner_invoice_id']=self.partner_id.parent_id.id
+        self.update(values)
+        return {
+            'domain': {
+                'partner_invoice_id':[('id','=',self.partner_id.parent_id.id)],
+            },
+        }
+
+
 
     # Al momento de crear un Inovice lo genera con su cuenta analitica y 
     def _create_invoices(self, grouped=False, final=False):
@@ -42,11 +87,22 @@ class SaleOrderCustom0(models.Model):
 
             # Invoice line values (keep only necessary sections).
             for line in order.order_line:
+                
                 if line.display_type == 'line_section':
                     pending_section = line
                     continue
                 if float_is_zero(line.qty_to_invoice, precision_digits=precision):
                     continue
+
+                #################################
+                if(order.partner_id.x_studio_canal_de_venta_1):
+                    listOfValue = []
+                    listOfValue.append(order.partner_id.x_studio_canal_de_venta_1.id)
+                    line.analytic_tag_ids = listOfValue
+                if(order.partner_id.x_studio_canal_de_venta):
+                    line.order_id.analytic_account_id = order.partner_id.x_studio_canal_de_venta.id
+                ################################
+
                 if line.qty_to_invoice > 0 or (line.qty_to_invoice < 0 and final):
                     if pending_section:
                         invoice_vals['invoice_line_ids'].append((0, 0, pending_section._prepare_invoice_line()))
@@ -103,51 +159,6 @@ class SaleOrderCustom0(models.Model):
             )
         return moves
 
-
-
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        """
-        Update the following fields when the partner is changed:
-        - Pricelist
-        - Payment terms
-        - Invoice address
-        - Delivery address
-        """
-        if not self.partner_id:
-            self.update({
-                'partner_invoice_id': False,
-                'partner_shipping_id': False,
-                'fiscal_position_id': False,
-            })
-            return
-
-        addr = self.partner_id.address_get(['delivery', 'invoice'])
-        partner_user = self.partner_id.user_id or self.partner_id.commercial_partner_id.user_id
-        values = {
-            'pricelist_id': self.partner_id.property_product_pricelist and self.partner_id.property_product_pricelist.id or False,
-            'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
-            'partner_invoice_id': addr['invoice'],
-            'partner_shipping_id': addr['delivery'],
-        }
-        user_id = partner_user.id
-        if not self.env.context.get('not_self_saleperson'):
-            user_id = user_id or self.env.uid
-        if self.user_id.id != user_id:
-            values['user_id'] = user_id
-
-        if self.env['ir.config_parameter'].sudo().get_param('account.use_invoice_terms') and self.env.company.invoice_terms:
-            values['note'] = self.with_context(lang=self.partner_id.lang).env.company.invoice_terms
-        values['team_id'] = self.env['crm.team']._get_default_team_id(domain=['|', ('company_id', '=', self.company_id.id), ('company_id', '=', False)],user_id=user_id)
-
-        if self.partner_id and self.partner_id.parent_id:
-            values['partner_invoice_id']=self.partner_id.parent_id.id
-        self.update(values)
-        # return {
-        #     'domain': {
-        #         'partner_invoice_id':[('id','=',self.partner_id.parent_id.id)],
-        #     },
-        # }
 
 # class AccountCustom0(models.Model):
 #     _name = 'account.move'
