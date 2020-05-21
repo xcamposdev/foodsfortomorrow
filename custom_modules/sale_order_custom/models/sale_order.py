@@ -96,12 +96,12 @@ class SaleOrderCustom0(models.Model):
                     continue
 
                 #################################
-                if(order.partner_id.x_studio_canal_de_venta_1):
+                if(order.partner_invoice_id.x_studio_canal_de_venta_1):
                     listOfValue = []
-                    listOfValue.append(order.partner_id.x_studio_canal_de_venta_1.id)
+                    listOfValue.append(order.partner_invoice_id.x_studio_canal_de_venta_1.id)
                     line.analytic_tag_ids = listOfValue
-                if(order.partner_id.x_studio_canal_de_venta):
-                    line.order_id.analytic_account_id = order.partner_id.x_studio_canal_de_venta.id
+                if(order.partner_invoice_id.x_studio_canal_de_venta):
+                    line.order_id.analytic_account_id = order.partner_invoice_id.x_studio_canal_de_venta.id
                 ################################
 
                 if line.qty_to_invoice > 0 or (line.qty_to_invoice < 0 and final):
