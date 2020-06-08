@@ -1,6 +1,22 @@
 ﻿<odoo>
 	<data>
 		<template id="report_invoice_document_custom" inherit_id="account.report_invoice_document">
+		
+			<xpath expr="//div[@class='page']/h2" position="replace">
+                <h2>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'posted' and o.journal_id.name == 'Ticket de venta'">Factura simplificada</span>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'posted' and o.partner_id.lang == 'es_ES' and o.journal_id.name == 'Customer Invoices'">Factura</span>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'posted' and o.partner_id.lang == 'en_US'">Invoice</span>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'draft' and o.partner_id.lang == 'es_ES'">Factura borrador</span>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'draft' and o.partner_id.lang == 'en_US'">Draft Invoice</span>
+                    <span t-if="o.type == 'out_invoice' and o.state == 'cancel'">Cancelled Invoice</span>
+                    <span t-if="o.type == 'out_refund'">Credit Note</span>
+                    <span t-if="o.type == 'in_refund' and o.partner_id.lang == 'es_ES'">Factura rectificativa</span>
+                    <span t-if="o.type == 'in_refund' and o.partner_id.lang == 'en_US'">Vendor Credit Note</span>
+                    <span t-if="o.type == 'in_invoice'">Vendor Bill</span>
+                    <span t-if="o.name != '/'" t-field="o.name"/>
+                </h2>
+            </xpath>
             
 			<xpath expr="//table[@class='table table-sm o_main_table']" position="replace">
                 <table class="table table-sm o_main_table" name="invoice_line_table">
