@@ -5,6 +5,7 @@ import logging
 import json
 from odoo import api, fields, models, exceptions
 from requests.auth import HTTPBasicAuth
+import datetime
 
 _logger = logging.getLogger(__name__)
 
@@ -65,10 +66,22 @@ class edicom_form(models.Model):
         _message = ""
         if (response.status_code == 500):
             _message = "Ocurrio un error en el servidor."
+            self.env['x_orders_salida'].create({
+                'x_name': self.name,
+                'x_studio_fecha_ltimo_intento_1': datetime.datetime.now(),
+                'x_studio_descripcin_estado_1': "Ocurrió un error en el envió de pedido",
+                'x_studio_field_rGeUU': "Error"
+            })
         elif (response.status_code == 401):
             _message = "Las credenciales de autenticidad son incorrectas."
         elif (response.status_code == 200):
             _message = "La solicitud de presupuesto se envio correctamente."
+            self.env['x_orders_salida'].create({
+                'x_name': self.name,
+                'x_studio_fecha_ltimo_intento_1': datetime.datetime.now(),
+                'x_studio_descripcin_estado_1': "Estado del pedido en proceso",
+                'x_studio_field_rGeUU': "status1"
+            })
             
         new = self.env['purchase.edicom.modal.notification'].create({'msg':_message})
         return {
@@ -77,7 +90,7 @@ class edicom_form(models.Model):
             'res_model': 'purchase.edicom.modal.notification',
             'view_type': 'form',
             'view_mode': 'form',
-            'res_id': new.id,
+            'res_id'    : new.id,
             'target': 'new',
         }
 
