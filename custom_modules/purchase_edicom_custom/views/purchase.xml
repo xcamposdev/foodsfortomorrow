@@ -22,6 +22,7 @@
             <field name="state" position="before">
                 <button name="send_by_edicom" string="Enviar por Edicom" type="object" class="oe_highlight" attrs="{'invisible':[('is_sent_edicom','=',True)]}" />
                 <button name="send_by_edicom" string="Reenviar por Edicom" type="object" class="oe_highlight" attrs="{'invisible':[('is_sent_edicom','=',False)]}"  />
+                <field name="is_sent_edicom" invisible="1" />
             </field>
         </field>
     </record>
