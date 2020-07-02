@@ -45,8 +45,8 @@ class edicom_form(models.Model):
                 sale_partner_id = sale_order_origin.partner_id.x_studio_gln
 
         name = ""
-        if(len(self.name) > 8):
-            _posInit = len(self.name)-8
+        if(len(self.name) > 5):
+            _posInit = len(self.name)-5
             _posEnd = len(self.name)
             name = self.name[_posInit:_posEnd]
 
