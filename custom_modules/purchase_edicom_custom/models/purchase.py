@@ -44,11 +44,17 @@ class edicom_form(models.Model):
             if(sale_order_origin.partner_id):
                 sale_partner_id = sale_order_origin.partner_id.x_studio_gln
 
+        name = ""
+        if(len(self.name) > 8):
+            _posInit = len(self.name)-8
+            _posEnd = len(self.name)
+            name = self.name[_posInit:_posEnd]
+
         detail = []
         if(self.order_line):
             for order_line in self.order_line:
                 detail.append({
-                    'clave1': self.name,
+                    'clave1': name,
                     'clave2': order_line.sequence or "",
                     'refean': order_line.product_id.x_studio_ean13 or "",
                     'dun14': order_line.product_id.x_studio_gtin14 or "",
@@ -57,12 +63,6 @@ class edicom_form(models.Model):
                     'cantped': order_line.product_qty or "0",
                 })
 
-        name = ""
-        if(len(self.name) > 8):
-            _posInit = len(self.name)-8
-            _posEnd = len(self.name)
-            name = self.name[_posInit:_posEnd]
-        
         current_register_log = self.env['x_orders_salida'].create({
             'x_name': self.name,
             'x_studio_fecha_ltimo_intento_1': datetime.datetime.now(),
