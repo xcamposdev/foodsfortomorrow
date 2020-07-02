@@ -16,17 +16,30 @@ class edicom_form(models.Model):
 
     is_sent_edicom = fields.Boolean(default=False)
 
+    def truncate_data(self, data, _len):
+        to_return = ""
+        if(data):
+            to_return = data or ""
+            if(len(data) > _len):
+                to_return = data[0:_len]
+        return to_return
+
+    def date_format(self, data, format):
+        to_return = ""
+        if(data):
+            to_return = data or ""
+            if(data != ""):
+                to_return = data.strftime(format)
+        return to_return
+    
     def send_by_edicom(self):
 
         url = self.env['ir.config_parameter'].get_param('edicom_api_url')
-        username = self.env['ir.config_parameter'].get_param(
-            'edicom_api_username')
-        password = self.env['ir.config_parameter'].get_param(
-            'edicom_api_password')
+        username = self.env['ir.config_parameter'].get_param('edicom_api_username')
+        password = self.env['ir.config_parameter'].get_param('edicom_api_password')
 
         sale_partner_id = ''
-        sale_order_origin = self.env['sale.order'].search(
-            [('name', '=', self.origin)], limit=1)
+        sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
         if(sale_order_origin):
             if(sale_order_origin.partner_id):
                 sale_partner_id = sale_order_origin.partner_id.x_studio_gln
@@ -44,34 +57,37 @@ class edicom_form(models.Model):
                     'cantped': order_line.product_qty or "0",
                 })
 
-        fecha = self.date_approve or ""
-        fecha_solicitud_entrega = self.x_studio_fecha_solicitud_entrega or ""
-
+        name = ""
+        if(len(self.name) > 8):
+            _posInit = len(self.name)-8
+            _posEnd = len(self.name)
+            name = self.name[_posInit:_posEnd]
+        
         current_register_log = self.env['x_orders_salida'].create({
             'x_name': self.name,
             'x_studio_fecha_ltimo_intento_1': datetime.datetime.now(),
             'x_studio_descripcin_estado_1': "",
             'x_studio_field_rGeUU': "status1"
         })
-
+        
         header = {
-            'clave1': self.name,
+            'clave1': name,
             'nodo': 220,
-            'numped': self.partner_ref or "",
-            'fecha': str(fecha),
-            'fechaepr': str(fecha_solicitud_entrega),
-            'fechatop': str(fecha_solicitud_entrega),
-            'emisor': self.company_id.x_studio_gln or "",
-            'comprador': self.company_id.x_studio_gln or "",
-            'cliente': self.company_id.x_studio_gln or "",
-            'receptor': sale_partner_id or "",
-            'vendedor': self.partner_id.x_studio_gln or "",
-            'qpaga': self.company_id.x_studio_gln or "",
-            'destmsg': self.partner_id.x_studio_gln or "",
+            'numped': self.truncate_data(self.partner_ref, 15),
+            'fecha': self.date_format(self.date_approve, "%Y%m%d"),
+            'fechaepr': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
+            'fechatop': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
+            'emisor': self.truncate_data(self.company_id.x_studio_gln, 17),
+            'comprador': self.truncate_data(self.company_id.x_studio_gln, 17),
+            'cliente': self.truncate_data(self.company_id.x_studio_gln, 17),
+            'receptor': self.truncate_data(sale_partner_id, 17),
+            'vendedor': self.truncate_data(self.partner_id.x_studio_gln, 17),
+            'qpaga': self.truncate_data(self.company_id.x_studio_gln, 17),
+            'destmsg': self.truncate_data(self.partner_id.x_studio_gln, 17),
             'details': detail,
             'id_log': current_register_log.id
         }
-
+        
         response = requests.post(url+"/api/order-register",
                                  data=json.dumps(header),
                                  headers={'Content-type': 'application/json'},
@@ -100,8 +116,7 @@ class edicom_form(models.Model):
             })
             self.is_sent_edicom = True
 
-        new = self.env['purchase.edicom.modal.notification'].create({
-                                                                    'msg': _message})
+        new = self.env['purchase.edicom.modal.notification'].create({'msg': _message})
         return {
             'type': 'ir.actions.act_window',
             'name': 'Información',
@@ -111,8 +126,7 @@ class edicom_form(models.Model):
             'res_id': new.id,
             'target': 'new',
         }
-
-
+    
 class edicom_form_notification_0(models.TransientModel):
     _name = "purchase.edicom.modal.notification"
 
