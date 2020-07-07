@@ -16,10 +16,12 @@ class stock_production_lot_custom_search(models.Model):
             args = []
         if name:
             stock_production_lot = []
-            stock_production_lot = self._search([('id', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid)
+            if(isinstance(name, int)):
+                stock_production_lot = self._search([('id', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid)
             if not stock_production_lot:
                 stock_production_lot = self._search([('name', '=', name)] + args, limit=limit, access_rights_uid=name_get_uid)
-            return models.lazy_name_get(self.browse(stock_production_lot).with_user(name_get_uid))
+                if(stock_production_lot):
+                    return models.lazy_name_get(self.browse(stock_production_lot).with_user(name_get_uid))
         
         args = list(args or [])
         if not self._rec_name:
