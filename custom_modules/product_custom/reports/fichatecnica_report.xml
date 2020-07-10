@@ -9,17 +9,20 @@
         file="product_custom.report_fichatecnica"
         report_type="qweb-pdf"/>
 
-    <!--<record id="report_fichatecnica_print" model="ir.actions.report">
-        <field name="paperformat_id" ref="base.paperformat_euro"/>
-    </record>
-
-     <template id="report_template_fichatecnica_print">
-        <t t-call="web.external_layout">
-        <t t-call="web.external_layout_standard">
-            <div class="page">
-                
-
-            </div>
-        </t>
-    </template>-->
+    <report
+        id="report_fichatecnica_plus_print"
+        model="product.template"
+        string="Ficha tecnica producto completa"
+        name="product_custom.report_fichatecnica_plus"
+        file="product_custom.report_fichatecnica_plus"
+        report_type="qweb-pdf"/>
+    
+    <report
+        id="report_fichatecnica_logistica_print"
+        model="product.template"
+        string="Ficha tecnica producto logistica"
+        name="product_custom.report_fichatecnica_logistica"
+        file="product_custom.report_fichatecnica_logistica"
+        report_type="qweb-pdf"/>
+		
 </odoo>

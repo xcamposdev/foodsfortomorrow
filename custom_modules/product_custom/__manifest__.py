@@ -26,6 +26,8 @@
         # report
         'reports/fichatecnica_report.xml',
         'reports/fichatecnica.xml',
+        'reports/fichatecnica_plus.xml',
+        'reports/fichatecnica_logistica.xml',
     ],
     # only loaded in demonstration mode
     'demo': [
