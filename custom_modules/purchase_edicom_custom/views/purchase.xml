@@ -1,0 +1,47 @@
+<odoo>
+    <!-- Parametros -->
+    <record id="edicom_api_username_key" model="ir.config_parameter">
+        <field name="key">edicom_api_username</field>
+        <field name="value">secret</field>
+    </record>
+    <record id="edicom_api_password_key" model="ir.config_parameter">
+        <field name="key">edicom_api_password</field>
+        <field name="value">secret</field>
+    </record>
+    <record id="edicom_api_url_key" model="ir.config_parameter">
+        <field name="key">edicom_api_url</field>
+        <field name="value">http://foodsfortomorrow.develoop.net</field>
+    </record>
+    
+    <!-- Adicion de boton -->
+    <record id="view_form_purchase_edicom_custom_0" model="ir.ui.view">
+        <field name="name">purchase.edicom.custom.0</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <button name="send_by_edicom" string="Enviar por Edicom" type="object" class="oe_highlight" attrs="{'invisible':[('is_sent_edicom','=',True)]}" />
+                <button name="send_by_edicom" string="Reenviar por Edicom" type="object" class="oe_highlight" attrs="{'invisible':[('is_sent_edicom','=',False)]}"  />
+                <field name="is_sent_edicom" invisible="1" />
+            </field>
+        </field>
+    </record>
+    
+    <!-- Modal de informacion -->
+    <record id="view_purchase_edicom_form_custom_0" model="ir.ui.view">
+        <field name="name">purchase.edicom.modal.notification.wizard</field>
+        <field name="model">purchase.edicom.modal.notification</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Cabecera" >
+                <group>
+                    <field name="msg" string="Mensaje"/>
+                </group>
+                <footer>
+                    <button special="cancel" string="Ok" class="oe_highlight" />                    
+                </footer>
+            </form>
+        </field>
+    </record>
+    
+</odoo>
