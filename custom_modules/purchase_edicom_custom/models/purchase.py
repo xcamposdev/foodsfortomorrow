@@ -55,7 +55,7 @@ class edicom_form(models.Model):
             for order_line in self.order_line:
                 detail.append({
                     'clave1': name,
-                    'clave2': order_line.sequence or "",
+                    'clave2': order_line.id or "",
                     'refean': order_line.product_id.x_studio_ean13 or "",
                     'dun14': order_line.product_id.x_studio_gtin14 or "",
                     'refetiq': order_line.product_id.x_studio_gtin14 or "",
