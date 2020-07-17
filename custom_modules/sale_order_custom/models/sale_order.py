@@ -3,7 +3,7 @@
 
 from itertools import groupby
 
-from odoo import api, fields, models, exceptions
+from odoo import api, fields, models, exceptions, SUPERUSER_ID, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare
 
@@ -96,12 +96,20 @@ class SaleOrderCustom0(models.Model):
                     continue
 
                 #################################
-                if(order.partner_invoice_id.x_studio_canal_de_venta_1):
-                    listOfValue = []
-                    listOfValue.append(order.partner_invoice_id.x_studio_canal_de_venta_1.id)
-                    line.analytic_tag_ids = listOfValue
-                if(order.partner_invoice_id.x_studio_canal_de_venta):
-                    line.order_id.analytic_account_id = order.partner_invoice_id.x_studio_canal_de_venta.id
+                account_input = line.product_id.categ_id.property_stock_account_input_categ_id.code or ''
+                account_output = line.product_id.categ_id.property_stock_account_output_categ_id.code or ''
+                valuation_account = line.product_id.categ_id.property_stock_valuation_account_id.code or ''
+                stock_journal = line.product_id.categ_id.property_stock_journal.code or ''
+                if (account_input.startswith('6') or account_input.startswith('7') or \
+                    account_output.startswith('6') or account_output.startswith('7') or \
+                    valuation_account.startswith('6') or valuation_account.startswith('7') or \
+                    stock_journal.startswith('6') or stock_journal.startswith('7')):
+                    if(order.partner_invoice_id.x_studio_canal_de_venta_1):
+                        listOfValue = []
+                        listOfValue.append(order.partner_invoice_id.x_studio_canal_de_venta_1.id)
+                        line.analytic_tag_ids = listOfValue
+                    if(order.partner_invoice_id.x_studio_canal_de_venta):
+                        line.order_id.analytic_account_id = order.partner_invoice_id.x_studio_canal_de_venta.id
                 ################################
 
                 if line.qty_to_invoice > 0 or (line.qty_to_invoice < 0 and final):
