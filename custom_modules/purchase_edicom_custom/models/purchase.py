@@ -59,7 +59,7 @@ class edicom_form(models.Model):
             for order_line in self.order_line:
                 # Check REFEAN
                 refean = order_line.product_id.x_studio_ean13
-                supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',order_line.product_id.id),('name', '=',self.partner_id.id)], limit=1)
+                supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',order_line.product_id.id),('name', '=',self.partner_id.id),('product_tmpl_id.default_code','=',order_line.product_id.default_code)], limit=1)
                 if(supplier):
                     if(supplier.product_code):
                         refean = supplier.product_code
