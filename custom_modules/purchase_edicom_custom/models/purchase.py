@@ -33,16 +33,20 @@ class edicom_form(models.Model):
         return to_return
     
     def send_by_edicom(self):
-
+        
         url = self.env['ir.config_parameter'].get_param('edicom_api_url')
         username = self.env['ir.config_parameter'].get_param('edicom_api_username')
         password = self.env['ir.config_parameter'].get_param('edicom_api_password')
+        po_warehouse_destination = self.env['ir.config_parameter'].get_param('edicom_po_almacen_destino')
 
         sale_partner_id = ''
-        sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
-        if(sale_order_origin):
-            if(sale_order_origin.partner_id):
-                sale_partner_id = sale_order_origin.partner_id.x_studio_gln
+        if(self.origin):
+            sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
+            if(sale_order_origin):
+                if(sale_order_origin.partner_id):
+                    sale_partner_id = sale_order_origin.partner_id.x_studio_gln    
+        else:
+            sale_partner_id = po_warehouse_destination
 
         name = ""
         if(len(self.name) > 5):
@@ -53,10 +57,18 @@ class edicom_form(models.Model):
         detail = []
         if(self.order_line):
             for order_line in self.order_line:
+                # Check REFEAN
+                refean = order_line.product_id.x_studio_ean13
+                supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',order_line.product_id.id),('name', '=',self.partner_id.id)], limit=1)
+                if(supplier):
+                    if(supplier.product_code):
+                        refean = supplier.product_code
+
+                order_line.product_id
                 detail.append({
                     'clave1': name,
                     'clave2': order_line.id or "",
-                    'refean': order_line.product_id.x_studio_ean13 or "",
+                    'refean': refean or "",
                     'dun14': order_line.product_id.x_studio_gtin14 or "",
                     'refetiq': order_line.product_id.x_studio_gtin14 or "",
                     'descmer': order_line.product_id.name or "",
