@@ -1,5 +1,9 @@
 <odoo>
     <!-- Parametros -->
+    <record id="edicom_api_url_key" model="ir.config_parameter">
+        <field name="key">edicom_api_url</field>
+        <field name="value">http://foodsfortomorrow.develoop.net</field>
+    </record>
     <record id="edicom_api_username_key" model="ir.config_parameter">
         <field name="key">edicom_api_username</field>
         <field name="value">secret</field>
@@ -8,9 +12,9 @@
         <field name="key">edicom_api_password</field>
         <field name="value">secret</field>
     </record>
-    <record id="edicom_api_url_key" model="ir.config_parameter">
-        <field name="key">edicom_api_url</field>
-        <field name="value">http://foodsfortomorrow.develoop.net</field>
+    <record id="edicom_po_almacen_destino_key" model="ir.config_parameter">
+        <field name="key">edicom_po_almacen_destino</field>
+        <field name="value">0</field>
     </record>
     
     <!-- Adicion de boton -->

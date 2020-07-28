@@ -6,9 +6,9 @@
     'category': 'Food For Tomorrow',
     'website': 'https://www.develoop.net/',
     'depends': ['stock', 'base'],
-    'summary': 'Food For Tomorrow Extend Functionality',
+    'summary': 'Food For Tomorrow CSV',
     'description': """
-        Permit search advanced in the importation
+        Permit search advanced in the importation CSV
         """,
     'data': [
     ],

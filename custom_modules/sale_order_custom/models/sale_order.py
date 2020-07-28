@@ -3,7 +3,7 @@
 
 from itertools import groupby
 
-from odoo import api, fields, models, exceptions
+from odoo import api, fields, models, exceptions, SUPERUSER_ID, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools import float_is_zero, float_compare
 
@@ -12,6 +12,17 @@ class SaleOrderCustom0(models.Model):
 
     _name = 'sale.order'
     _inherit = 'sale.order'
+
+    @api.depends('partner_id')
+    def canal_venta_padre(self):
+        self.analytic_account_id = self.partner_id.x_studio_canal_de_venta
+    
+    analytic_account_id = fields.Many2one(
+        'account.analytic.account', 'Analytic Account',
+        readonly=True, copy=False, check_company=True,  # Unrequired company
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        help="The analytic account related to a sales order.", compute='canal_venta_padre')
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -37,6 +48,7 @@ class SaleOrderCustom0(models.Model):
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
             'partner_invoice_id': addr['invoice'],
             'partner_shipping_id': addr['delivery'],
+            'analytic_account_id': self.partner_id.x_studio_canal_de_venta,
         }
         user_id = partner_user.id
         if not self.env.context.get('not_self_saleperson'):
@@ -161,63 +173,31 @@ class SaleOrderCustom0(models.Model):
         return moves
 
 
-# class AccountCustom0(models.Model):
-#     _name = 'account.move'
-#     _inherit = 'account.move'
+class AccountCustom0(models.Model):
 
-#     @api.model
-#     def default_get(self, default_fields):
-#         # OVERRIDE linea 3455
-#         values = super(AccountMoveLine, self).default_get(default_fields)
+    _inherit = 'account.move.line'
 
-#         if 'account_id' in default_fields \
-#             and (self._context.get('journal_id') or self._context.get('default_journal_id')) \
-#             and not values.get('account_id') \
-#             and self._context.get('default_type') in self.move_id.get_inbound_types():
-#             # Fill missing 'account_id'.
-#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
-#             values['account_id'] = journal.default_credit_account_id.id
-#         elif 'account_id' in default_fields \
-#             and (self._context.get('journal_id') or self._context.get('default_journal_id')) \
-#             and not values.get('account_id') \
-#             and self._context.get('default_type') in self.move_id.get_outbound_types():
-#             # Fill missing 'account_id'.
-#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
-#             values['account_id'] = journal.default_debit_account_id.id
-#         elif self._context.get('line_ids') and any(field_name in default_fields for field_name in ('debit', 'credit', 'account_id', 'partner_id')):
-#             move = self.env['account.move'].new({'line_ids': self._context['line_ids']})
+    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', index=True, compute='_get_partner_analytic_account_tag' )
+    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags', compute='_get_partner_analytic_account_tag')
 
-#             # Suggest default value for debit / credit to balance the journal entry.
-#             balance = sum(line['debit'] - line['credit'] for line in move.line_ids)
-#             # if we are here, line_ids is in context, so journal_id should also be.
-#             journal = self.env['account.journal'].browse(self._context.get('default_journal_id') or self._context['journal_id'])
-#             currency = journal.exists() and journal.company_id.currency_id
-#             if currency:
-#                 balance = currency.round(balance)
-#             if balance < 0.0:
-#                 values.update({'debit': -balance})
-#             if balance > 0.0:
-#                 values.update({'credit': balance})
-
-#             # Suggest default value for 'partner_id'.
-#             if 'partner_id' in default_fields and not values.get('partner_id'):
-#                 if len(move.line_ids[-2:]) == 2 and  move.line_ids[-1].partner_id == move.line_ids[-2].partner_id != False:
-#                     values['partner_id'] = move.line_ids[-2:].mapped('partner_id').id
-
-#             # Suggest default value for 'account_id'.
-#             if 'account_id' in default_fields and not values.get('account_id'):
-#                 if len(move.line_ids[-2:]) == 2 and  move.line_ids[-1].account_id == move.line_ids[-2].account_id != False:
-#                     values['account_id'] = move.line_ids[-2:].mapped('account_id').id
-#         if values.get('display_type'):
-#             values.pop('account_id', None)
-#         if (values.get('partner_id')):
-#             partner = self.env['res.partner'].search([('id', '=', values.get('partner_id') )], limit=1)
-#             values['analytic_tag_ids'] = partner.x_studio_canal_de_venta_1_1.id
-#             if(partner):
-#                 if(partner.x_studio_canal_de_venta_1_1):
-#                     listOfValue = []
-#                     listOfValue.append(partner.x_studio_canal_de_venta_1_1.id)
-#                     values['analytic_tag_ids'] = listOfValue
-#                 if(partner.x_studio_canales_de_venta_23_1):
-#                     values['analytic_account_id'] = partner.x_studio_canales_de_venta_23_1.id
-#         return values
+    @api.depends('move_id')
+    def _get_partner_analytic_account_tag(self):
+        if(self.move_id):
+            account_input = self.product_id.categ_id.property_stock_account_input_categ_id.code or ''
+            account_output = self.product_id.categ_id.property_stock_account_output_categ_id.code or ''
+            valuation_account = self.product_id.categ_id.property_stock_valuation_account_id.code or ''
+            stock_journal = self.product_id.categ_id.property_stock_journal.code or ''
+            if (account_input.startswith('6') or account_input.startswith('7') or \
+                account_output.startswith('6') or account_output.startswith('7') or \
+                valuation_account.startswith('6') or valuation_account.startswith('7') or \
+                stock_journal.startswith('6') or stock_journal.startswith('7')):
+                
+                if(self.move_id.partner_shipping_id.x_studio_canal_de_venta_1):
+                    listOfValue = []
+                    listOfValue.append(self.move_id.partner_shipping_id.x_studio_canal_de_venta_1.id)
+                    self.analytic_tag_ids = listOfValue
+                if(self.move_id.partner_shipping_id.x_studio_canal_de_venta):
+                    self.analytic_account_id = self.move_id.partner_shipping_id.x_studio_canal_de_venta.id
+            else:
+                self.analytic_tag_ids = False
+                self.analytic_account_id = False
