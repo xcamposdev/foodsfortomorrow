@@ -13,16 +13,20 @@ class SaleOrderCustom0(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
-    @api.depends('partner_id')
-    def canal_venta_padre(self):
-        self.analytic_account_id = self.partner_id.x_studio_canal_de_venta
-    
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 'Analytic Account',
         readonly=True, copy=False, check_company=True,  # Unrequired company
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
         help="The analytic account related to a sales order.", compute='canal_venta_padre')
+
+    @api.depends('partner_id')
+    def _canal_venta_padre(self):
+        for sale in self:
+            if(sale.partner_id):
+                sale.analytic_account_id = sale.partner_id.x_studio_canal_de_venta
+            else:
+                sale.analytic_account_id = False
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
