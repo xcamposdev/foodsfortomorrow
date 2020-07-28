@@ -18,7 +18,7 @@ class SaleOrderCustom0(models.Model):
         readonly=True, copy=False, check_company=True,  # Unrequired company
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        help="The analytic account related to a sales order.", compute='canal_venta_padre')
+        help="The analytic account related to a sales order.", compute='_canal_venta_padre')
 
     @api.depends('partner_id')
     def _canal_venta_padre(self):
