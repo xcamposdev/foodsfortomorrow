@@ -13,6 +13,17 @@ class SaleOrderCustom0(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
+    @api.depends('partner_id')
+    def canal_venta_padre(self):
+        self.analytic_account_id = self.partner_id.x_studio_canal_de_venta
+    
+    analytic_account_id = fields.Many2one(
+        'account.analytic.account', 'Analytic Account',
+        readonly=True, copy=False, check_company=True,  # Unrequired company
+        states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
+        domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+        help="The analytic account related to a sales order.", compute='canal_venta_padre')
+
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         """
@@ -37,6 +48,7 @@ class SaleOrderCustom0(models.Model):
             'payment_term_id': self.partner_id.property_payment_term_id and self.partner_id.property_payment_term_id.id or False,
             'partner_invoice_id': addr['invoice'],
             'partner_shipping_id': addr['delivery'],
+            'analytic_account_id': self.partner_id.x_studio_canal_de_venta,
         }
         user_id = partner_user.id
         if not self.env.context.get('not_self_saleperson'):
