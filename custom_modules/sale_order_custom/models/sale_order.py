@@ -13,16 +13,20 @@ class SaleOrderCustom0(models.Model):
     _name = 'sale.order'
     _inherit = 'sale.order'
 
-    @api.depends('partner_id')
-    def canal_venta_padre(self):
-        self.analytic_account_id = self.partner_id.x_studio_canal_de_venta
-    
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 'Analytic Account',
         readonly=True, copy=False, check_company=True,  # Unrequired company
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        help="The analytic account related to a sales order.", compute='canal_venta_padre')
+        help="The analytic account related to a sales order.", compute='_canal_venta_padre')
+
+    @api.depends('partner_id')
+    def _canal_venta_padre(self):
+        for sale in self:
+            if(sale.partner_id):
+                sale.analytic_account_id = sale.partner_id.x_studio_canal_de_venta
+            else:
+                sale.analytic_account_id = False
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -172,32 +176,3 @@ class SaleOrderCustom0(models.Model):
             )
         return moves
 
-
-class AccountCustom0(models.Model):
-
-    _inherit = 'account.move.line'
-
-    analytic_account_id = fields.Many2one('account.analytic.account', string='Analytic Account', index=True, compute='_get_partner_analytic_account_tag' )
-    analytic_tag_ids = fields.Many2many('account.analytic.tag', string='Analytic Tags', compute='_get_partner_analytic_account_tag')
-
-    @api.depends('move_id')
-    def _get_partner_analytic_account_tag(self):
-        if(self.move_id):
-            account_input = self.product_id.categ_id.property_stock_account_input_categ_id.code or ''
-            account_output = self.product_id.categ_id.property_stock_account_output_categ_id.code or ''
-            valuation_account = self.product_id.categ_id.property_stock_valuation_account_id.code or ''
-            stock_journal = self.product_id.categ_id.property_stock_journal.code or ''
-            if (account_input.startswith('6') or account_input.startswith('7') or \
-                account_output.startswith('6') or account_output.startswith('7') or \
-                valuation_account.startswith('6') or valuation_account.startswith('7') or \
-                stock_journal.startswith('6') or stock_journal.startswith('7')):
-                
-                if(self.move_id.partner_shipping_id.x_studio_canal_de_venta_1):
-                    listOfValue = []
-                    listOfValue.append(self.move_id.partner_shipping_id.x_studio_canal_de_venta_1.id)
-                    self.analytic_tag_ids = listOfValue
-                if(self.move_id.partner_shipping_id.x_studio_canal_de_venta):
-                    self.analytic_account_id = self.move_id.partner_shipping_id.x_studio_canal_de_venta.id
-            else:
-                self.analytic_tag_ids = False
-                self.analytic_account_id = False
