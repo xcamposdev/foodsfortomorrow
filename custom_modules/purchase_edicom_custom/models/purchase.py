@@ -74,6 +74,7 @@ class edicom_form(models.Model):
                     'refetiq': order_line.product_id.x_studio_gtin14 or "",
                     'descmer': order_line.product_id.name or "",
                     'cantped': order_line.product_qty or "0",
+                    'cantue': order_line.product_id.x_studio_unidades_caja_ud
                 })
 
         current_register_log = self.env['x_orders_salida'].create({
