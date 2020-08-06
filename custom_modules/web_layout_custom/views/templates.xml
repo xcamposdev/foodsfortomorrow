@@ -18,4 +18,117 @@
             
         </template>
     </data>
+	
+	<template id="custom_template_plus">
+        <t t-set="company" t-value="env.company"/>
+
+        <div t-attf-class="header o_company_#{company.id}_layout">
+            <div class="row">
+                <table style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%;">
+                    <tr style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%;">
+                        <td style="text-align:center; border-collapse:collapse; border:1px solid black; width:15%;">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 80px;" alt="Logo"/>
+                        </td>
+                        <td style="border-collapse:collapse; border:1px solid black; width:70%; text-align:center;"> 
+                            <strong style="font-size:25px" t-field="doc.name"/>
+                        </td>
+                        <td style="border-collapse:collapse; border:1px solid black; width:15%; font-size:14px;">
+                            REV.: <span t-field="doc.version"/><br/>
+                            <span>HEURA</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"  t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <ul class="list-inline mb4">
+                    <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
+                        adding d-inline class fixes the problem-->
+                    <li t-if="company.phone" class="list-inline-item d-inline">Telf.: <span t-field="company.phone"/></li>
+                    <li t-if="company.email" class="list-inline-item d-inline">Email: calidad@heurafoods.com</li>
+                    <li t-if="company.street" class="list-inline-item d-inline">Dirección fiscal: <span t-field="company.street"/>, <span t-field="company.city"/> (<span t-field="company.zip"/>)</li>
+                    <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                </ul>
+
+                <!--<div name="financial_infos">
+                    <span t-field="company.report_footer"/>
+                </div>-->
+
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    Pág: <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="custom_template_logistica">
+        <t t-set="company" t-value="env.company"/>
+
+        <div t-attf-class="header o_company_#{company.id}_layout">
+            <div class="row">
+                <table style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%;">
+                    <tr style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%;">
+                        <td style="text-align:center; border-collapse:collapse; border:1px solid black; width:15%;">
+                            <img t-if="company.logo" t-att-src="image_data_uri(company.logo)" style="max-height: 80px;" alt="Logo"/>
+                        </td>
+                        <td style="border-collapse:collapse; border:1px solid black; width:70%; text-align:center;"> 
+                            <strong style="font-size:25px" t-field="doc.name"/>
+                        </td>
+                        <td style="border-collapse:collapse; border:1px solid black; width:15%; font-size:14px;">
+                            VERSIÓN: <span t-field="doc.version"/><br/>
+                            <span>HEURA</span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout"  t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id" t-att-data-oe-lang="o and o.env.context.get('lang')">
+            <t t-call="web.address_layout"/>
+            <t t-raw="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+            <div class="text-center" style="border-top: 1px solid black;">
+                <ul class="list-inline mb4">
+                    <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
+                        adding d-inline class fixes the problem-->
+                    <li t-if="company.phone" class="list-inline-item d-inline">Telf.: <span t-field="company.phone"/></li>
+                    <li t-if="company.email" class="list-inline-item d-inline">Email: calidad@heurafoods.com</li>
+                    <li t-if="company.street" class="list-inline-item d-inline">Dirección fiscal: <span t-field="company.street"/>, <span t-field="company.city"/> (<span t-field="company.zip"/>)</li>
+                    <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                </ul>
+
+                <!--<div name="financial_infos">
+                    <span t-field="company.report_footer"/>
+                </div>-->
+
+                <div t-if="report_type == 'pdf'" class="text-muted">
+                    Pág: <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <report id="action_report_custom_plus"
+        model="res.company"
+        name="web_layout_custom.custom_template_plus"
+        file="web_layout_custom.custom_template_plus"
+        string="Preview External Report"
+        report_type="qweb-pdf"/>
+    
+    <report id="action_report_custom_logistica"
+        model="res.company"
+        name="web_layout_custom.custom_template_logistica"
+        file="web_layout_custom.custom_template_logistica"
+        string="Preview External Report"
+        report_type="qweb-pdf"/>
+	
 </odoo>
