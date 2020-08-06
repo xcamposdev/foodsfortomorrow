@@ -18,7 +18,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">DESCRIPCIÓN</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Descripción</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.name"/>
                                 </td>
@@ -29,41 +29,41 @@
 
                         <table style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%">
                             <tr style="background-color:grey; color:black; border-collapse:collapse; border:1px solid grey;">
-                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">PRODUCTO</th>
+                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">Producto</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PRESENTACION Y MATERIAL</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Presentación y Material</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_presentacin_usuario_final"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">LARGO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Largo (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_largo_producto_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ANCHO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Ancho (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_ancho_producto_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ALTO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Alto (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_alto_producto_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO BRUTO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Bruto (gr)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.weight"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO NETO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Neto (gr)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_peso_neto_unitario_gr"/>
                                 </td>
@@ -75,7 +75,7 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª CONSERVACIÓN</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª Conservación</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_temperatura_almacenaje_c"/>
                                 </td>
@@ -86,62 +86,62 @@
 
                         <table style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%">
                             <tr style="background-color:grey; color:black; border-collapse:collapse; border:1px solid grey;">
-                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">UMB (CAJA)</th>
+                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">UMB (Caja)</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PRESENTACION</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Presentación</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_presentacin_usuario_final"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">LARGO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Largo (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_largo_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ANCHO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Ancho (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_ancho_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ALTO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Alto (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_alto_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO BRUTO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Bruto (kg)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;">
                                     <t t-set="peso_bruto" t-value="doc.weight/1000.0"/>
                                     <p t-esc="peso_bruto" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO NETO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Neto (kg)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <t t-set="peso_neto" t-value="doc.x_studio_peso_umb_gr/1000.0"/>
                                     <p t-esc="peso_neto" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">VOLUMEN CAJA (m3)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Volumen Caja (m3)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <t t-set="volumen_m3" t-value="doc.x_studio_volumen_caja_cm3 / 1000000.0"/>
                                     <p t-esc="volumen_m3" t-options='{"widget": "float", "precision": 2}'/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">GTIN14 CAJA</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">GTIN14 Caja</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_gtin14"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª CONSERVACIÓN</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª Conservación</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_temperatura_almacenaje_c"/>
                                 </td>
@@ -155,83 +155,83 @@
 
                         <table style="text-align:center; border-collapse:collapse; border:1px solid black; width:100%">
                             <tr style="background-color:grey; color:black; border-collapse:collapse; border:1px solid grey;">
-                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">PALLET</th>
+                                <th style="text-align:left; border-collapse:collapse; border:1px solid grey;">Pallet</th>
                                 <th></th>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">FORMATO</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Formato</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_tipo_pallet"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">CAJASxCAPA</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Cajas x Capa</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_cajas_capa_ud"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">CAPASxPALET</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Capas x Pallet</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_n_capas_ud"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">CAJAS TOTALES PALET</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Cajas Totales Pallet</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_total_cajas_ud"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">LARGO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Largo (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_largo_pallet"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ANCHO (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Ancho (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_ancho_pallet"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ALTO PALET C/BASE (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Alto Pallet C/Base (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_altura_pallet_con_madera_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">VOLUMEN PALET (m3)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Volumen Pallet (m3)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_volumen_pallet_m3"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO BRUTO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Bruto (kg)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_peso_bruto_pallet_kg"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">PESO NETO (KG)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Peso Neto (kg)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_peso_pallet_kg"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">ALTO BASE MADERA (CM)</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Alto Base Madera (cm)</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_altura_base_pallet_cm"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">GTIN14 PALLET</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">GTIN14 Pallet</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_gtin14"/>
                                 </td>
                             </tr>
                             <tr>
-                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª CONSERVACIÓN</td>
+                                <td style="text-align:left; border-collapse:collapse; border:1px solid black;">Tª Conservación</td>
                                 <td style="border-collapse:collapse; border:1px solid black;"> 
                                     <p t-field="doc.x_studio_temperatura_almacenaje_c"/>
                                 </td>
