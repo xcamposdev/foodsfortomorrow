@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- adicionar evento de calculo -->
+    <record id="view_form_account_move_form_custom_0" model="ir.ui.view">
+        <field name="name">account.move.line.custom.0</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="analytic_account_id" position="before">
+                <field name="custom_analytic" invisible="1" />
+            </field>
+        </field>
+    </record>
+    
+</odoo>
