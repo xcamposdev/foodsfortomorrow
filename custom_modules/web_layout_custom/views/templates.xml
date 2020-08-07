@@ -51,10 +51,9 @@
                 <ul class="list-inline mb4">
                     <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
                         adding d-inline class fixes the problem-->
-                    <li t-if="company.phone" class="list-inline-item d-inline">Telf.: <span t-field="company.phone"/></li>
-                    <li t-if="company.email" class="list-inline-item d-inline">Email: calidad@heurafoods.com</li>
-                    <li t-if="company.street" class="list-inline-item d-inline">Dirección fiscal: <span t-field="company.street"/>, <span t-field="company.city"/> (<span t-field="company.zip"/>)</li>
-                    <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                    <li t-if="company.name" class="list-inline-item d-inline"><span t-field="company.name"/></li>
+                    <li t-if="company.street" class="list-inline-item d-inline"><span t-field="company.street"/>, <span t-field="company.zip"/> <span t-field="company.city"/>, <span t-field="company.country_id.name"/></li>
+                    <li t-if="company.vat" class="list-inline-item d-inline">Este documento se genera automáticamente, válido sin firma y sustituye a versiones anteriores. Aprobado por Dpto. de Calidad - Erika Blaskova; tel. 609 810 189, email calidad@heurafoods.com</li>
                 </ul>
 
                 <!--<div name="financial_infos">
@@ -100,10 +99,9 @@
                 <ul class="list-inline mb4">
                     <!-- using the list-inline-item class from bootstrap causes weird behaviours in pdf report
                         adding d-inline class fixes the problem-->
-                    <li t-if="company.phone" class="list-inline-item d-inline">Telf.: <span t-field="company.phone"/></li>
-                    <li t-if="company.email" class="list-inline-item d-inline">Email: calidad@heurafoods.com</li>
-                    <li t-if="company.street" class="list-inline-item d-inline">Dirección fiscal: <span t-field="company.street"/>, <span t-field="company.city"/> (<span t-field="company.zip"/>)</li>
-                    <li t-if="company.vat" class="list-inline-item d-inline"><t t-esc="company.country_id.vat_label or 'Tax ID'"/>: <span t-field="company.vat"/></li>
+                    <li t-if="company.name" class="list-inline-item d-inline"><span t-field="company.name"/></li>
+                    <li t-if="company.street" class="list-inline-item d-inline"><span t-field="company.street"/>, <span t-field="company.zip"/> <span t-field="company.city"/>, <span t-field="company.country_id.name"/></li>
+                    <li t-if="company.vat" class="list-inline-item d-inline">Este documento se genera automáticamente, válido sin firma y sustituye a versiones anteriores. Aprobado por Dpto. de Calidad - Erika Blaskova; tel. 609 810 189, email calidad@heurafoods.com</li>
                 </ul>
 
                 <!--<div name="financial_infos">
