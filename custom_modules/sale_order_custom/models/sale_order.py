@@ -15,10 +15,10 @@ class SaleOrderCustom0(models.Model):
 
     analytic_account_id = fields.Many2one(
         'account.analytic.account', 'Analytic Account',
-        readonly=True, copy=False, check_company=True,  # Unrequired company
+        readonly=True, copy=False, check_company=True, # Unrequired company
         states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
         domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
-        help="The analytic account related to a sales order.", compute='_canal_venta_padre')
+        help="The analytic account related to a sales order.", compute='_canal_venta_padre', store=True)
 
     @api.depends('partner_id')
     def _canal_venta_padre(self):
