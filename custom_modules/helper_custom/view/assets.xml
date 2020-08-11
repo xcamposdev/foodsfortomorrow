@@ -2,7 +2,7 @@
 <!DOCTYPE xml>
 <odoo>
 
-    <template id="assets_calculadora" inherit_id="web.assets_backend">
+    <template id="assets_helper" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/helper_custom/static/src/js/helper_custom.js"></script>
             <link rel="stylesheet" href="/helper_custom/static/src/css/helper_custom.css" />

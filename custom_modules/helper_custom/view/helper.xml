@@ -20,8 +20,14 @@
         <field name="inherit_id" ref="sale.view_order_form"/>
         <field name="arch" type="xml">
             <field name="state" position="before">
-                <button name="update_data" string="Actualizar datos" type="object" class="oe_highlight" />
+                <button name="update_client" string="Actualizar datos CLIENTE" type="object" class="oe_highlight" />
             </field>
+            <field name="state" position="before">
+                <button name="update_sale" string="Actualizar datos Venta" type="object" class="oe_highlight" />
+            </field>
+             <!-- <field name="order_line" position="attributes">
+                <attribute name="class">sale_order_style_custom</attribute>
+            </field> -->
         </field>
     </record>
 
