@@ -1,0 +1,11 @@
+.sale_order_style_custom table thead tr th:nth-child(2) {
+    width: 300px !important;
+}
+/* .sale_order_style_custom table thead tr th */
+/* [data-id="name"] {
+    width: 200px;
+} */
+/* .sale_order_style_custom > table > thead > tr > th [data-name="product_id"] {
+    width: 100px;
+    color: blue;
+} */
