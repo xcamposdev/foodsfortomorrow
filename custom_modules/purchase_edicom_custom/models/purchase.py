@@ -66,8 +66,8 @@ class edicom_form(models.Model):
                         refean = supplier.product_code
 
                 quantity = order_line.product_qty
-                if(order_line.x_studio_unidades_caja_ud > 0):
-                    quantity = order_line.product_qty * order_line.x_studio_unidades_caja_ud 
+                if(order_line.product_id.x_studio_unidades_caja_ud > 0):
+                    quantity = order_line.product_qty * order_line.product_id.x_studio_unidades_caja_ud 
 
                 order_line.product_id
                 detail.append({
