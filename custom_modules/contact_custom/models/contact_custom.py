@@ -47,3 +47,12 @@ class contact_custom_0(models.Model):
             self.x_studio_canal_de_venta_1 = self.parent_id.x_studio_canal_de_venta_1
             self.user_id = self.parent_id.user_id
     
+    def create(self, vals_list):
+        for vals in vals_list:
+            if((vals['type'] == 'contact' or vals['type'] == 'delivery') and (vals['parent_id'] != False)):
+                parent = self.env['res.partner'].search([('id','=',vals['parent_id'])], limit=1)
+                vals['x_studio_canal_de_venta'] = parent.x_studio_canal_de_venta.id
+                vals['x_studio_canal_de_venta_1'] = parent.x_studio_canal_de_venta_1.id
+                vals['user_id'] = parent.user_id.id
+
+        return super(contact_custom_0, self).create(vals_list);
