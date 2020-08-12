@@ -65,6 +65,10 @@ class edicom_form(models.Model):
                     if(supplier.product_code):
                         refean = supplier.product_code
 
+                quantity = order_line.product_qty
+                if(order_line.x_studio_unidades_caja_ud > 0):
+                    quantity = order_line.product_qty * order_line.x_studio_unidades_caja_ud 
+
                 order_line.product_id
                 detail.append({
                     'clave1': name,
@@ -73,7 +77,7 @@ class edicom_form(models.Model):
                     'dun14': order_line.product_id.x_studio_gtin14 or "",
                     'refetiq': order_line.product_id.x_studio_gtin14 or "",
                     'descmer': order_line.product_id.name or "",
-                    'cantped': order_line.product_qty or "0",
+                    'cantped': quantity or "0",
                     'cantue': order_line.product_id.x_studio_unidades_caja_ud
                 })
 
@@ -87,7 +91,7 @@ class edicom_form(models.Model):
         header = {
             'clave1': name,
             'nodo': 220,
-            'numped': name, #self.truncate_data(self.partner_ref, 15),
+            'numped': self.truncate_data(self.partner_ref, 15),
             'fecha': self.date_format(self.date_approve, "%Y%m%d"),
             'fechaepr': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
             'fechatop': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
