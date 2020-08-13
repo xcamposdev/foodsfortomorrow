@@ -14,7 +14,7 @@
     </record>
     <record id="edicom_po_almacen_destino_key" model="ir.config_parameter">
         <field name="key">edicom_po_almacen_destino</field>
-        <field name="value">0</field>
+        <field name="value">8437017033004</field>
     </record>
     
     <!-- Adicion de boton -->
