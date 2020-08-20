@@ -1,6 +1,6 @@
 <odoo>
     <!-- Parametros -->
-    <record id="edicom_api_url_key" model="ir.config_parameter">
+    <!-- <record id="edicom_api_url_key" model="ir.config_parameter">
         <field name="key">edicom_api_url</field>
         <field name="value">http://foodsfortomorrow.develoop.net</field>
     </record>
@@ -15,7 +15,7 @@
     <record id="edicom_po_almacen_destino_key" model="ir.config_parameter">
         <field name="key">edicom_po_almacen_destino</field>
         <field name="value">8437017033004</field>
-    </record>
+    </record> -->
     
     <!-- Adicion de boton -->
     <record id="view_form_purchase_edicom_custom_0" model="ir.ui.view">
