@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    
+    <!-- adicionar agrupamiento -->
+    <!-- <record id="view_form_purchase_edicom_custom_0" model="ir.ui.view">
+        <field name="name">purchase.edicom.custom.0</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_sales_order_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group//filter[@name='salesperson']" position="before">
+                <filter string="Analytic Account" name="Cuenta Analítica" domain="[]" context="{'group_by': 'analytic_account_id'}"/>
+            </xpath>
+        </field>
+    </record> -->
+
+    <!-- Adicion de boton -->
+    <record id="view_form_sale_order_custom_0" model="ir.ui.view">
+        <field name="name">sale.order.custom.0</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="state" position="before">
+                <button name="update_client" string="Actualizar datos CLIENTE" type="object" class="oe_highlight" />
+            </field>
+            <field name="state" position="before">
+                <button name="update_sale" string="Actualizar datos Venta" type="object" class="oe_highlight" />
+            </field>
+             <!-- <field name="order_line" position="attributes">
+                <attribute name="class">sale_order_style_custom</attribute>
+            </field> -->
+        </field>
+    </record>
+
+</odoo>

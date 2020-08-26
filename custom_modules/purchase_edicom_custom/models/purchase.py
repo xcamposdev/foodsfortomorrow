@@ -33,16 +33,20 @@ class edicom_form(models.Model):
         return to_return
     
     def send_by_edicom(self):
-
+        
         url = self.env['ir.config_parameter'].get_param('edicom_api_url')
         username = self.env['ir.config_parameter'].get_param('edicom_api_username')
         password = self.env['ir.config_parameter'].get_param('edicom_api_password')
+        po_warehouse_destination = self.env['ir.config_parameter'].get_param('edicom_po_almacen_destino')
 
         sale_partner_id = ''
-        sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
-        if(sale_order_origin):
-            if(sale_order_origin.partner_id):
-                sale_partner_id = sale_order_origin.partner_id.x_studio_gln
+        if(self.origin):
+            sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
+            if(sale_order_origin):
+                if(sale_order_origin.partner_id):
+                    sale_partner_id = sale_order_origin.partner_id.x_studio_gln    
+        else:
+            sale_partner_id = po_warehouse_destination
 
         name = ""
         if(len(self.name) > 5):
@@ -53,14 +57,28 @@ class edicom_form(models.Model):
         detail = []
         if(self.order_line):
             for order_line in self.order_line:
+                # Check REFEAN
+                refean = order_line.product_id.x_studio_ean13
+                product_template_id = self.env['product.product'].search([('id','=',order_line.product_id.id)], limit=1)
+                supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',product_template_id.product_tmpl_id.id),('name', '=',self.partner_id.id)], limit=1)
+                if(supplier):
+                    if(supplier.product_code):
+                        refean = supplier.product_code
+
+                quantity = order_line.product_qty
+                if(order_line.product_id.x_studio_unidades_caja_ud > 0):
+                    quantity = order_line.product_qty * order_line.product_id.x_studio_unidades_caja_ud 
+
+                order_line.product_id
                 detail.append({
                     'clave1': name,
-                    'clave2': order_line.sequence or "",
-                    'refean': order_line.product_id.x_studio_ean13 or "",
+                    'clave2': order_line.id or "",
+                    'refean': refean or "",
                     'dun14': order_line.product_id.x_studio_gtin14 or "",
                     'refetiq': order_line.product_id.x_studio_gtin14 or "",
                     'descmer': order_line.product_id.name or "",
-                    'cantped': order_line.product_qty or "0",
+                    'cantped': quantity or "0",
+                    'cantue': order_line.product_id.x_studio_unidades_caja_ud
                 })
 
         current_register_log = self.env['x_orders_salida'].create({
@@ -73,7 +91,7 @@ class edicom_form(models.Model):
         header = {
             'clave1': name,
             'nodo': 220,
-            'numped': self.truncate_data(self.partner_ref, 15),
+            'numped': name, #self.truncate_data(self.partner_ref, 15),
             'fecha': self.date_format(self.date_approve, "%Y%m%d"),
             'fechaepr': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
             'fechatop': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
