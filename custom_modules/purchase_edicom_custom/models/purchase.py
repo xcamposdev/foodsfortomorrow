@@ -40,9 +40,11 @@ class edicom_form(models.Model):
         po_warehouse_destination = self.env['ir.config_parameter'].get_param('edicom_po_almacen_destino')
 
         sale_partner_id = ''
+        numped = 'STOCK'
         if(self.origin):
             sale_order_origin = self.env['sale.order'].search([('name', '=', self.origin)], limit=1)
             if(sale_order_origin):
+                numped = sale_order_origin.client_order_ref
                 if(sale_order_origin.partner_id):
                     sale_partner_id = sale_order_origin.partner_id.x_studio_gln    
         else:
@@ -91,10 +93,11 @@ class edicom_form(models.Model):
         header = {
             'clave1': name,
             'nodo': 220,
-            'numped': name, #self.truncate_data(self.partner_ref, 15),
+            'numped': numped,
             'fecha': self.date_format(self.date_approve, "%Y%m%d"),
             'fechaepr': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
             'fechatop': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
+            'ncontrat': self.truncate_data(self.name, 17),
             'emisor': self.truncate_data(self.company_id.x_studio_gln, 17),
             'comprador': self.truncate_data(self.company_id.x_studio_gln, 17),
             'cliente': self.truncate_data(self.company_id.x_studio_gln, 17),
