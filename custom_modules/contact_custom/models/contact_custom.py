@@ -49,7 +49,7 @@ class contact_custom_0(models.Model):
     
     def create(self, vals_list):
         for vals in vals_list:
-            if((vals['type'] == 'contact' or vals['type'] == 'delivery') and (vals['parent_id'] != False)):
+            if(vals.get('type') is not None and (vals['type'] == 'contact' or vals['type'] == 'delivery') and (vals.get('parent_id') is not None and vals['parent_id'] != False)):
                 parent = self.env['res.partner'].search([('id','=',vals['parent_id'])], limit=1)
                 vals['x_studio_canal_de_venta'] = parent.x_studio_canal_de_venta.id
                 vals['x_studio_canal_de_venta_1'] = parent.x_studio_canal_de_venta_1.id

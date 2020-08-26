@@ -36,7 +36,9 @@ class stock_production_lot_custom_search(models.Model):
 
     def check_if_is_int(self, s):
         try: 
-            int(s)
-            return True
+            data = int(s)
+            if(data > -2147483648 and data < +2147483647):
+                return True    
+            return False
         except ValueError:
             return False
