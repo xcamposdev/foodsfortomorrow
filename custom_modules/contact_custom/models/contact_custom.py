@@ -46,6 +46,8 @@ class contact_custom_0(models.Model):
             self.x_studio_canal_de_venta = self.parent_id.x_studio_canal_de_venta
             self.x_studio_canal_de_venta_1 = self.parent_id.x_studio_canal_de_venta_1
             self.user_id = self.parent_id.user_id
+        if(self.parent_id and self.parent_id.id):
+            self.x_studio_notificar_pedido = self.parent_id.x_studio_notificar_pedido
     
     def create(self, vals_list):
         for vals in vals_list:
@@ -54,5 +56,6 @@ class contact_custom_0(models.Model):
                 vals['x_studio_canal_de_venta'] = parent.x_studio_canal_de_venta.id
                 vals['x_studio_canal_de_venta_1'] = parent.x_studio_canal_de_venta_1.id
                 vals['user_id'] = parent.user_id.id
-
+            if(vals.get('parent_id') is not None and vals['parent_id'] != False):
+                self.x_studio_notificar_pedido = self.parent_id.x_studio_notificar_pedido
         return super(contact_custom_0, self).create(vals_list);
