@@ -40,13 +40,11 @@ class contact_custom_0(models.Model):
     def onchange_type(self):
         self.set_value_of_partner()
 
-
     def set_value_of_partner(self):
         if((self.type == 'contact' or self.type == 'delivery') and (self.parent_id and self.parent_id.id)):
             self.x_studio_canal_de_venta = self.parent_id.x_studio_canal_de_venta
             self.x_studio_canal_de_venta_1 = self.parent_id.x_studio_canal_de_venta_1
             self.user_id = self.parent_id.user_id
-        if(self.parent_id and self.parent_id.id):
             self.x_studio_notificar_pedido = self.parent_id.x_studio_notificar_pedido
     
     def create(self, vals_list):
@@ -56,6 +54,12 @@ class contact_custom_0(models.Model):
                 vals['x_studio_canal_de_venta'] = parent.x_studio_canal_de_venta.id
                 vals['x_studio_canal_de_venta_1'] = parent.x_studio_canal_de_venta_1.id
                 vals['user_id'] = parent.user_id.id
-            if(vals.get('parent_id') is not None and vals['parent_id'] != False):
-                self.x_studio_notificar_pedido = self.parent_id.x_studio_notificar_pedido
-        return super(contact_custom_0, self).create(vals_list);
+                vals['x_studio_notificar_pedido'] = parent.x_studio_notificar_pedido
+        return super(contact_custom_0, self).create(vals_list)
+
+    def write(self, vals):
+        childs = self.env['res.partner'].search([('parent_id','=',self.id)])
+        for child in childs:
+            if(child.type is not None and (child.type == 'contact' or child.type == 'delivery') and (vals['x_studio_notificar_pedido'] is not None)):
+                child.x_studio_notificar_pedido = vals['x_studio_notificar_pedido']
+        return super(contact_custom_0, self).write(vals)
