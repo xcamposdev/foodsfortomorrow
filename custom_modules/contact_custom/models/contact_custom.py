@@ -60,6 +60,6 @@ class contact_custom_0(models.Model):
     def write(self, vals):
         childs = self.env['res.partner'].search([('parent_id','=',self.id)])
         for child in childs:
-            if(child.type is not None and (child.type == 'contact' or child.type == 'delivery') and (vals['x_studio_notificar_pedido'] is not None)):
+            if(child.type is not None and (child.type == 'contact' or child.type == 'delivery') and ('x_studio_notificar_pedido' in vals)):
                 child.x_studio_notificar_pedido = vals['x_studio_notificar_pedido']
         return super(contact_custom_0, self).write(vals)
