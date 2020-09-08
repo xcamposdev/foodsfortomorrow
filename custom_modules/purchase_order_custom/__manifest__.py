@@ -9,7 +9,7 @@
     'description': """
         Modificar funcionalidad de compras
         """,
-    'depends': ['purchase'],
+    'depends': ['base','purchase'],
     'data': [
         # 'security/ir.model.access.csv',
         #'view/sale_order.xml',

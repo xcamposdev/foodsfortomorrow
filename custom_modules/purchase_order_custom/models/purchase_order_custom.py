@@ -21,12 +21,5 @@ class PurchaseOrderCustom0(models.Model):
     partner_id = fields.Many2one(
         'res.partner', string='Vendor', required=True, states=READONLY_STATES, 
         change_default=True, tracking=True, 
-        domain="['|','&', ('company_id', '=', False), ('company_id', '=', company_id), ('parent_id', '=', False)]", 
+        domain="['|','&','&', ('company_id', '=', False), ('company_id', '=', company_id), ('parent_id', '=', False), ('supplier_rank', '>', 0)]", 
         help="You can find a vendor by its Name, TIN, Email or Internal Reference.")
-    
-
-    # partner_id = fields.Many2one(
-    #     'res.partner', string='Customer', readonly=True,
-    #     states={'draft': [('readonly', False)], 'sent': [('readonly', False)]},
-    #     required=True, change_default=True, index=True, tracking=1,
-    #     domain="['|','&','|', ('company_id', '=', False), ('company_id', '=', company_id), ('parent_id', '=', False), ('type', '=', 'delivery')]",)
