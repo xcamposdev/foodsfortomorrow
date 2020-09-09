@@ -1,0 +1,15 @@
+<odoo>
+
+    <!-- Adicion de boton -->
+    <record id="view_form_stock_inventory_line_tree2_custom_0" model="ir.ui.view">
+        <field name="name">stock.inventory.line.tree2.custom.0</field>
+        <field name="model">stock.inventory.line</field>
+        <field name="inherit_id" ref="stock.stock_inventory_line_tree2"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='product_id']" position="after">
+                <field name="x_reason" width="0.8" attrs="{'readonly': [('state', '!=', 'confirm')]}"/>
+            </xpath>
+        </field>
+    </record>
+    
+</odoo>
