@@ -58,8 +58,10 @@ class contact_custom_0(models.Model):
         return super(contact_custom_0, self).create(vals_list)
 
     def write(self, vals):
-        childs = self.env['res.partner'].search([('parent_id','=',self.id)])
-        for child in childs:
-            if(child.type is not None and (child.type == 'contact' or child.type == 'delivery') and ('x_studio_notificar_pedido' in vals)):
-                child.x_studio_notificar_pedido = vals['x_studio_notificar_pedido']
+        for partner in self:
+            if(partner.id):
+                childs = self.env['res.partner'].search([('parent_id','=',partner.id)])
+                for child in childs:
+                    if(child.type is not None and (child.type == 'contact' or child.type == 'delivery') and ('x_studio_notificar_pedido' in vals)):
+                        child.x_studio_notificar_pedido = vals['x_studio_notificar_pedido']
         return super(contact_custom_0, self).write(vals)
