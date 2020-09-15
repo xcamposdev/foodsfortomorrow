@@ -13,3 +13,10 @@ class StockInventoryLineCustom0(models.Model):
     _inherit = 'stock.inventory.line'
 
     x_reason = fields.Char('Motivo')
+    x_reason = fields.Selection(selection=[
+            ('Rotura/Avería', 'Rotura/Avería'),
+            ('Calidad', 'Calidad'),
+            ('Devoluciones/Rechazos', 'Devoluciones/Rechazos'),
+            ('Precaducado', 'Precaducado'),
+            ('Caducado', 'Caducado'),
+        ], string='Estado')
