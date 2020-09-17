@@ -96,7 +96,7 @@ class edicom_form(models.Model):
         header = {
             'clave1': name,
             'nodo': 220,
-            'numped': numped,
+            'numped': numped + "-" + name,
             'fecha': self.date_format(self.date_approve, "%Y%m%d"),
             'fechaepr': self.date_format(self.x_studio_fecha_solicitud_entrega, "%Y%m%d"),
             'fechaere': self.date_format(fechaere, "%Y%m%d"),
