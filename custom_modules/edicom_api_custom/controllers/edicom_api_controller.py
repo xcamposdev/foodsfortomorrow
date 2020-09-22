@@ -21,6 +21,7 @@ class EdicomAPIController(http.Controller):
     @http.route('/edicom/input_desadv', auth='user', type='json', methods=['POST'], csrf=False)
     def edicom_api_order_desav(self):
         try:
+            #Creo el log de en processo
             body_data = json.loads(request.httprequest.data)
             albaran_edicom = body_data['albaran']
             albaran_lines = body_data['albaran_detail']
@@ -35,8 +36,10 @@ class EdicomAPIController(http.Controller):
             self.create_move_for_new_item(albaran_edicom, albaran_lines_verify)
             
             return self.process_albaran(albaran_edicom, albaran_lines)
+            #actualizar log de completado
         
         except Exception as e:
+            #actualizar log de error
             self.save_odoo_log('x_orders_desav', None, 'Error general', str(e), self.STATUS_ERROR)
             _logger.info(str(e))
             return { 'status_code':500, 'message':'Error de tipo ' + str(e) }
@@ -62,8 +65,7 @@ class EdicomAPIController(http.Controller):
                         _logger.info("PILLO ALGO INDEXISTEN")
                         product_search = request.env['product.template'].search([('x_studio_ean13','=',albaran_lines['ean'])], limit=1)
     
-                        picking_id = purchase.picking_ids[0].id
-                        stock_move_stock = request.env['stock.picking'].search([('id','=', picking_id)], limit=1)
+                        stock_move_stock = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)[0].id
     
                         if(product_search):
                             _logger.info(stock_move_stock)
@@ -74,7 +76,8 @@ class EdicomAPIController(http.Controller):
                                 'product_id': product_search.id,
                                 'product_uom': product_search.uom_id.id,
                                 'location_id': stock_move_stock.location_id[0].id,
-                                'location_dest_id': stock_move_stock.location_dest_id[0].id
+                                'location_dest_id': stock_move_stock.location_dest_id[0].id,
+                                'state': 'confirmed'
                             })
                             
                         else:
@@ -89,7 +92,7 @@ class EdicomAPIController(http.Controller):
         purchase = request.env['purchase.order'].search([('name','=', albaran_edicom['numcontrato'])], limit=1)
         if(purchase):
             order_lines = purchase.order_line
-            picking_ids = purchase.picking_ids.ids
+            picking_ids = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1).ids
             _logger.info("order_lines y pickings")
             _logger.info(order_lines)
             _logger.info(picking_ids)
@@ -144,7 +147,7 @@ class EdicomAPIController(http.Controller):
                                         _logger.info("exists_product_in paso con exito")
                                         linAlbObj = albaran_lines[index_line]
                                         ap.append(linAlbObj)
-                                        if (self.saveAlbaranDetailData(picking_ids, order_line_id, productId, arrayMoveId, productUomId, locationId, locationDestId, linAlbObj['cenvfac'], linAlbObj['lote'], self.getDateTime(linAlbObj['feccon']))):
+                                        if (self.saveAlbaranDetailData(picking_ids, order_line_id, productId, arrayMoveId, productUomId, locationId, locationDestId, linAlbObj['cenvfac'], linAlbObj['lote'], self.getDateTime(linAlbObj['feccon']), linAlbObj['sscc1'])):
                                             albaran_lines[index_line]['status'] = True
                                             _logger.info("Se creo el registro")
                                         else:
@@ -227,7 +230,7 @@ class EdicomAPIController(http.Controller):
 		
         return result
 
-    def saveAlbaranDetailData(self, pickingIds, orderLineId, productId, arrayMoveId, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate):
+    def saveAlbaranDetailData(self, pickingIds, orderLineId, productId, arrayMoveId, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate, sscc1):
         try:
             stock_move_search = request.env['stock.move'].search_read(['&',('id','in',arrayMoveId),('picking_id','in',pickingIds)], ['id', 'move_line_ids', 'picking_id'])
 
@@ -235,7 +238,7 @@ class EdicomAPIController(http.Controller):
                 stockMoveId = stock_move['id']
                 moveLineIds = stock_move['move_line_ids']
                 idStockPicking = stock_move['picking_id'][0]
-                self.registerStockMoveLinkLot(idStockPicking, orderLineId, productId, stockMoveId, moveLineIds, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate)
+                self.registerStockMoveLinkLot(idStockPicking, orderLineId, productId, stockMoveId, moveLineIds, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate, sscc1)
             return True
 
         except Exception as e:
@@ -244,7 +247,7 @@ class EdicomAPIController(http.Controller):
             return False
 
 
-    def registerStockMoveLinkLot(self, idStockPicking, orderLineId, productId, stockMoveId, moveLineIds, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate):
+    def registerStockMoveLinkLot(self, idStockPicking, orderLineId, productId, stockMoveId, moveLineIds, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate, sscc1):
         try:
             lot_search = request.env['stock.production.lot'].search(['&','&',('name','=',lotName),('product_id','=',productId),('company_id','=',1)])
             
@@ -268,9 +271,11 @@ class EdicomAPIController(http.Controller):
                 'company_id': 1,
                 'product_uom_id': productUomId,
                 'location_id': locationId,
-                'location_dest_id': locationDestId
+                'location_dest_id': locationDestId,
+                'x_studio_sscc_1': sscc1
             })
 
+            _logger.info("STOCK MOVE LINE CREADO ES: " + str(move_id_create.id))
             moveLineIds.append(move_id_create)
             stock_move_update = request.env['stock.move'].search([('id','=',stockMoveId)])
             stock_move_update.write({
