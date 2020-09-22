@@ -20,7 +20,6 @@ class EdicomAPIController(http.Controller):
     ID_LOG = 0
     INTENTS = 0
     
-    
     @http.route('/edicom/input_desadv', auth='user', type='json', methods=['POST'], csrf=False)
     def edicom_api_order_desav(self):
         try:
