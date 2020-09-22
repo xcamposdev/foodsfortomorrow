@@ -7,26 +7,33 @@ import copy
 
 from odoo import http
 from odoo.http import request
+from odoo import exceptions
 
 _logger = logging.getLogger(__name__)
 
 class EdicomAPIController(http.Controller):
 
     STATUS_PROCCESS = 'status1'
-    STATUS_SENT = 'status2'
+    STATUS_RECEIVED = 'status2'
     STATUS_CANCELLED = 'status3'
     STATUS_ERROR = 'Error'
+    ID_LOG = 0
     INTENTS = 0
-
+    
+    
     @http.route('/edicom/input_desadv', auth='user', type='json', methods=['POST'], csrf=False)
     def edicom_api_order_desav(self):
         try:
+            self.ID_LOG = 0
+            self.INTENTS = 0
             #Creo el log de en processo
             body_data = json.loads(request.httprequest.data)
             albaran_edicom = body_data['albaran']
             albaran_lines = body_data['albaran_detail']
             albaran_lines_verify = copy.deepcopy(albaran_lines)  
             
+            
+            self.save_odoo_log(albaran_edicom['numcontrato'], 'En Proceso...', self.STATUS_PROCCESS)
             _logger.info("Albaran y Detalle")
             _logger.info(albaran_edicom)
             _logger.info(albaran_lines)
@@ -35,18 +42,22 @@ class EdicomAPIController(http.Controller):
             ##session_info =  request.env['ir.http'].session_info()
             self.create_move_for_new_item(albaran_edicom, albaran_lines_verify)
             
+            _logger.info("JALAAA")
+            cr, uid, context, registry = request.cr, request.uid, request.context, request.registry
+            _logger.info("ACTUALIZO EL CONTEXTO")
+            
             return self.process_albaran(albaran_edicom, albaran_lines)
             #actualizar log de completado
         
         except Exception as e:
             #actualizar log de error
-            self.save_odoo_log('x_orders_desav', None, 'Error general', str(e), self.STATUS_ERROR)
+            self.save_odoo_log('', 'Error general ' + str(e), self.STATUS_ERROR)
             _logger.info(str(e))
             return { 'status_code':500, 'message':'Error de tipo ' + str(e) }
 
     def create_move_for_new_item(self, albaran_edicom, albaran_lines_verify):
         try:
-            _logger.info("create_move_for_new_item")
+            _logger.info("INICIO create_move_for_new_item")
             purchase = request.env['purchase.order'].search([('name','=', albaran_edicom['numcontrato'])], limit=1)
             if(purchase):
                 a1 = request.env['product.supplierinfo'].search_read([('product_tmpl_id','in',purchase.order_line.product_id.ids)], ['id','product_code','product_tmpl_id'])
@@ -58,14 +69,14 @@ class EdicomAPIController(http.Controller):
                         if (self.exists_product_in(a1, purchase_line.product_id.id, 'product_code', 'product_tmpl_id', albaran_lines_verify[index]['ean']) or \
                             self.exists_product_in(a2, purchase_line.product_id.id, 'x_studio_ean13', 'product_variant_ids', albaran_lines_verify[index]['ean'])):
                             albaran_lines_verify[index]['status'] = 'exist'
-                
                 _logger.info("Despues del for")
+
                 for albaran_lines in albaran_lines_verify:
                     if(albaran_lines['status'] != 'exist'):
-                        _logger.info("PILLO ALGO INDEXISTEN")
+                        _logger.info("se encontro move nuevo para agregar")
                         product_search = request.env['product.template'].search([('x_studio_ean13','=',albaran_lines['ean'])], limit=1)
     
-                        stock_move_stock = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)[0].id
+                        stock_move_stock = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)[0]
     
                         if(product_search):
                             _logger.info(stock_move_stock)
@@ -79,12 +90,13 @@ class EdicomAPIController(http.Controller):
                                 'location_dest_id': stock_move_stock.location_dest_id[0].id,
                                 'state': 'confirmed'
                             })
-                            
+                            _logger.info("SE CREATE: " + str(id_create))
                         else:
                             _logger.info("PRODUCTO NO EXISTENTE CON EAN: " + str(albaran_lines['ean']))
             test = ""
         except Exception as e:
             _logger.info(str(e))
+            raise exceptions.UserError(str(e))
         
     def process_albaran(self, albaran_edicom, albaran_lines):
         all_process_successfully = True
@@ -111,9 +123,13 @@ class EdicomAPIController(http.Controller):
                         _logger.info("Paso saveAlbaranData")
                             
                         products_ids = self.get_Product_ids(purchase.order_line)
+                        _logger.info("Paso get_Product_ids")
                         moves_ids = self.get_moves_ids(purchase.order_line)
+                        _logger.info("Paso get_moves_ids")
                         a1 = request.env['product.supplierinfo'].search_read([('product_tmpl_id','in',products_ids)], ['id','product_code','product_tmpl_id'])
+                        _logger.info("Paso a1")
                         a2 = request.env['product.template'].search_read([('product_variant_ids','in',products_ids)], ['id','x_studio_ean13','product_variant_ids'])
+                        _logger.info("Paso a2")
                         ap = [];
                         firtsOrderLineId = 0
                         _logger.info("products_ids, moves_ids, a1, a2, ap")
@@ -159,9 +175,9 @@ class EdicomAPIController(http.Controller):
                             _logger.info("INTENTO NRO " + str(self.INTENTS))
                             INTENTS = INTENTS + 1
                             self.process_albaran(albaran_edicom, albaran_lines, self.INTENTS)
-                
+                        
+                        self.save_odoo_log('', 'Completado exitosamente', self.STATUS_RECEIVED)
                         return { 'status_code':200, 'message':'success' }
-
 
         
     def exists_product_in(self, arrayItems, productId, field, field_index, value):
@@ -190,41 +206,36 @@ class EdicomAPIController(http.Controller):
                 'carrier_tracking_ref': carrier,
                 'date_done': date
             })
-            if (stock_picking):
-                return True
-            else:
-                self.save_odoo_log('x_orders_desav', None, picking_id, 'Problema al guardar el albaran ' + carrier, self.STATUS_ERROR);
-                _logger.info(picking_id)
-            return False
+            return True
 
         except Exception as e:
-            self.save_odoo_log('x_orders_desav', None, 'Error al guardar', str(e), self.STATUS_ERROR)
             _logger.info(str(e))
-            return False
+            raise exceptions.UserError(str(e))
 
-    def save_odoo_log(self, model_name, id_log, name, description, status):
+    def save_odoo_log(self, name, description, status):
         result = False
         try:
-            _logger.info(id_log)
-            _logger.info(model_name)
-            if(id_log):
-                _log = request.env[''+ model_name + ''].search([('id','=',id_log)], limit=1)
+            if(self.ID_LOG > 0):
+                _log = request.env['x_orders_desav'].search([('id','=',self.ID_LOG)], limit=1)
                 _log.write({
-                    'x_name': name,
+                    #'x_name': name,
                     'x_studio_fecha_ltimo_intento': datetime.datetime.now(),
                     'x_studio_descripcin_estado': description,
                     'x_studio_estado': status
                 })
                 result = True
+                _logger.info("Se modifico el log: " + str(self.ID_LOG))
             else:
-                _log = request.env[''+ model_name + ''].create({
+                _log = request.env['x_orders_desav'].create({
                     'x_name': name,
                     'x_studio_fecha_ltimo_intento': datetime.datetime.now(),
                     'x_studio_descripcin_estado': description,
                     'x_studio_estado': status
                 })
+                self.ID_LOG = _log.id
+                _logger.info("Se creo el log: " + str(self.ID_LOG))
                 result = True
-
+            
         except Exception as e:
             _logger.info(str(e))
 		
@@ -243,8 +254,7 @@ class EdicomAPIController(http.Controller):
 
         except Exception as e:
             _logger.info(str(e))
-            self.save_odoo_log('x_orders_desav', None, 'Error al guardar', str(e), self.STATUS_ERROR);
-            return False
+            raise exceptions.UserError(str(e))
 
 
     def registerStockMoveLinkLot(self, idStockPicking, orderLineId, productId, stockMoveId, moveLineIds, productUomId, locationId, locationDestId, cenvfac, lotName, lifeDate, sscc1):
@@ -291,24 +301,21 @@ class EdicomAPIController(http.Controller):
                 _logger.info(stock_move_update)
                 if(lot_id is None or lot_id.id == False):
                     _logger.info('Problema al guardar la linea del albaran ' + lotName)
-                    self.save_odoo_log('x_orders_desav', None, 'lote', 'Problema al guardar la linea del albaran ' + lotName, self.STATUS_ERROR)
                 elif(move_id_create is None or move_id_create.id == False):
                     _logger.info('Problema al guardar el move ' + move_id_create)
-                    self.save_odoo_log('x_orders_desav', None, 'move_id', 'Problema al guardar el move ' + move_id_create, self.STATUS_ERROR)
                 elif(stock_move_update is None or stock_move_update.id == False):
                     _logger.info('Problema al guardar el move ' + stock_move_update)
-                    self.save_odoo_log('x_orders_desav', None, 'move.line', 'Problema al guardar la linea del albaran ' + stock_move_update, self.STATUS_ERROR)
                 return False
 
         except Exception as e:
             _logger.info(str(e))
-            self.save_odoo_log('x_orders_desav', None, 'Error al guardar', str(e), self.STATUS_ERROR);
-            return False
+            raise exceptions.UserError(str(e))
         
     def get_Product_ids(self, order_lines):
         products_id = []
         for line in order_lines:
-            products_id.append(line.product_id[0].id)
+            if(line.display_type == False):
+                products_id.append(line.product_id.id)
         return products_id
 
     def get_moves_ids(self, order_lines):
