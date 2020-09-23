@@ -58,17 +58,17 @@ class EdicomAPIController(http.Controller):
     def verify_data(self, albaran_edicom, albaran_lines):
         msg = ""
         if(albaran_edicom):
-            msg = msg + ('' if albaran_edicom['numcontrato'] else ' Falta el valor de: numcontrato \r\n')
-            msg = msg + ('' if albaran_edicom['numalb'] else ' Falta el valor de: numalb \r\n')
-            msg = msg + ('' if albaran_edicom['fecenvio'] else ' Falta el valor de: fecenvio \r\n')
+            msg = msg + ('' if albaran_edicom['numcontrato'] else 'Falta el valor de: numcontrato \r\n')
+            msg = msg + ('' if albaran_edicom['numalb'] else 'Falta el valor de: numalb \r\n')
+            msg = msg + ('' if albaran_edicom['fecenvio'] else 'Falta el valor de: fecenvio \r\n')
 
         if(albaran_lines):
             for index in range(len(albaran_lines)):
-                msg = msg + ('' if albaran_lines[index]['ean'] else ' Linea: ' + str(index) + ': Falta el valor de: ean \r\n')
-                msg = msg + ('' if albaran_lines[index]['cenvfac'] else ' Linea: ' + str(index) + ': Falta el valor de: cenvfac \r\n')
-                msg = msg + ('' if albaran_lines[index]['lote'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \r\n')
-                msg = msg + ('' if albaran_lines[index]['feccon'] else ' Linea: ' + str(index) + ': Falta el valor de: feccon \r\n')
-                msg = msg + ('' if albaran_lines[index]['sscc1'] else ' Linea: ' + str(index) + ': Falta el valor de: sscc1 \r\n')
+                msg = msg + ('' if albaran_lines[index]['ean'] else 'Linea: ' + str(index) + ': Falta el valor de: ean \r\n')
+                msg = msg + ('' if albaran_lines[index]['cenvfac'] else 'Linea: ' + str(index) + ': Falta el valor de: cenvfac \r\n')
+                msg = msg + ('' if albaran_lines[index]['lote'] else 'Linea: ' + str(index) + ': Falta el valor de: lote \r\n')
+                msg = msg + ('' if albaran_lines[index]['feccon'] else 'Linea: ' + str(index) + ': Falta el valor de: feccon \r\n')
+                msg = msg + ('' if albaran_lines[index]['sscc1'] else 'Linea: ' + str(index) + ': Falta el valor de: sscc1 \r\n')
 
         if(msg != ''):
             raise exceptions.UserError("Faltan los siguientes datos \r\n" +  msg)
@@ -79,16 +79,18 @@ class EdicomAPIController(http.Controller):
         
         purchase = request.env['purchase.order'].search([('name','=', albaran_edicom['numcontrato'])], limit=1)
         if(purchase):
-
             pickings = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)
-            pickings[0].write({
-                'carrier_tracking_ref': albaran_edicom['numalb'],
-                'date_done': self.getDateTime(albaran_edicom['fecenvio'])
-            })
 
             if(purchase.order_line and pickings):
+                pickings[0].write({
+                    'carrier_tracking_ref': albaran_edicom['numalb'],
+                    'date_done': self.getDateTime(albaran_edicom['fecenvio'])
+                })
                 for linea_alb in albaran_lines:
-                    stock_move = self.search_in_stocks_moves(linea_alb, pickings, purchase.partner_id.id)
+                    _tuple_help = self.search_in_stocks_moves(linea_alb, pickings, purchase.partner_id.id)
+                    stock_move = _tuple_help[0]
+                    if(_tuple_help[1]):
+                        pickings[0].write({ 'move_ids_without_package': [(4, stock_move.id)] })
                     stock_production_lot = self.search_stock_production_lot(stock_move.product_id.id, linea_alb['lote'], self.getDateTime(linea_alb['feccon']), company_id)
 
                     stock_move_line = request.env['stock.move.line'].create({
@@ -122,10 +124,9 @@ class EdicomAPIController(http.Controller):
                     break
             if(exists == True):
                 break
-
         if(exists):
             _logger.info("Se encontro en los stock moves del picking")
-            return _stock_move
+            return _stock_move, False
         else:
             product_supplierinfo = request.env['product.supplierinfo'].search(['&',('product_code','=',linea_alb['ean']),('name.id','=',purchase_partner_id)], limit=1)
             if(product_supplierinfo):
@@ -139,7 +140,7 @@ class EdicomAPIController(http.Controller):
                         break
             if(exists):
                 _logger.info("Se encontro en supplierinfo del proveedor")
-                return _stock_move
+                return _stock_move, False
             else:
                 product_search = request.env['product.template'].search([('x_studio_ean13','=',linea_alb['ean'])], limit=1)
                 if(product_search):
@@ -153,11 +154,8 @@ class EdicomAPIController(http.Controller):
                         'location_dest_id': pickings[0].location_dest_id.id,
                         'state': 'confirmed'
                     })
-                    pickings[0].write({
-                        'move_ids_without_package': [(4, _stock_move.id)]
-                    })
                     _logger.info("Se lo creo a partir del producto existente")
-                    return _stock_move, pickings[0]
+                    return _stock_move, True
                 else:
                     raise exceptions.UserError("El codigo ean: " + linea_alb['ean'] + " no existe en productos")
 
