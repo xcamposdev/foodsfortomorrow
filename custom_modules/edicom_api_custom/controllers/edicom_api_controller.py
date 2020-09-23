@@ -48,27 +48,30 @@ class EdicomAPIController(http.Controller):
         except Exception as e:
             _logger.info(str(e))
             #request.env.cr.rollback()
-            self.save_odoo_log('', 'Error general ' + str(e), self.STATUS_ERROR)
+            if(e.name is None):
+                self.save_odoo_log('', 'Error general: ' + str(e), self.STATUS_ERROR)
+            else:
+                self.save_odoo_log('', 'Error general: ' + str(e.name), self.STATUS_ERROR)
             return { 'status_code':500, 'message':'Error de tipo ' + str(e) }
 
 
     def verify_data(self, albaran_edicom, albaran_lines):
         msg = ""
         if(albaran_edicom):
-            msg = msg + ('' if albaran_edicom['numcontrato'] else ' Falta el valor de: numcontrato \n')
-            msg = msg + ('' if albaran_edicom['numalb'] else ' Falta el valor de: numalb \n')
-            msg = msg + ('' if albaran_edicom['fecenvio'] else ' Falta el valor de: fecenvio \n')
+            msg = msg + ('' if albaran_edicom['numcontrato'] else ' Falta el valor de: numcontrato \r\n')
+            msg = msg + ('' if albaran_edicom['numalb'] else ' Falta el valor de: numalb \r\n')
+            msg = msg + ('' if albaran_edicom['fecenvio'] else ' Falta el valor de: fecenvio \r\n')
 
         if(albaran_lines):
             for index in range(len(albaran_lines)):
-                msg = msg + ('' if albaran_lines[index]['ean'] else ' Linea: ' + str(index) + ': Falta el valor de: ean \n')
-                msg = msg + ('' if albaran_lines[index]['cenvfac'] else ' Linea: ' + str(index) + ': Falta el valor de: cenvfac \n')
-                msg = msg + ('' if albaran_lines[index]['lote'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \n')
-                msg = msg + ('' if albaran_lines[index]['feccon'] else ' Linea: ' + str(index) + ': Falta el valor de: feccon \n')
-                msg = msg + ('' if albaran_lines[index]['sscc1'] else ' Linea: ' + str(index) + ': Falta el valor de: sscc1 \n')
+                msg = msg + ('' if albaran_lines[index]['ean'] else ' Linea: ' + str(index) + ': Falta el valor de: ean \r\n')
+                msg = msg + ('' if albaran_lines[index]['cenvfac'] else ' Linea: ' + str(index) + ': Falta el valor de: cenvfac \r\n')
+                msg = msg + ('' if albaran_lines[index]['lote'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \r\n')
+                msg = msg + ('' if albaran_lines[index]['feccon'] else ' Linea: ' + str(index) + ': Falta el valor de: feccon \r\n')
+                msg = msg + ('' if albaran_lines[index]['sscc1'] else ' Linea: ' + str(index) + ': Falta el valor de: sscc1 \r\n')
 
         if(msg != ''):
-            raise exceptions.UserError("Faltan los siguientes datos " +  msg)
+            raise exceptions.UserError("Faltan los siguientes datos \r\n" +  msg)
 
 
     def process_albaran(self, albaran_edicom, albaran_lines, company_id=1):
