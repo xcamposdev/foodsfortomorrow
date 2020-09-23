@@ -23,8 +23,6 @@ class EdicomAPIController(http.Controller):
     @http.route('/edicom/input_desadv', auth='user', type='json', methods=['POST'], csrf=False)
     def edicom_api_order_desav(self):
         try:
-            request.session.authenticate('Andres_Test', 'acastillo@develoop.net', 'Temp1243')
-
             #INICIALIZACION
             self.ID_LOG = 0
             self.INTENTS = 0
@@ -34,6 +32,7 @@ class EdicomAPIController(http.Controller):
             
             #CREACION DE LOG
             self.save_odoo_log(albaran_edicom['numcontrato'], 'En Proceso...', self.STATUS_PROCCESS)
+            #request.env.cr.commit()
             _logger.info("Albaran y Detalle")
             _logger.info(albaran_edicom)
             _logger.info(albaran_lines)
@@ -44,9 +43,11 @@ class EdicomAPIController(http.Controller):
             self.process_albaran(albaran_edicom, albaran_lines)
 
             self.save_odoo_log('', 'Completado exitosamente', self.STATUS_RECEIVED)
+            #request.env.cr.commit()
             return { 'status_code':200, 'message':'success' }
         except Exception as e:
             _logger.info(str(e))
+            #request.env.cr.rollback()
             self.save_odoo_log('', 'Error general ' + str(e), self.STATUS_ERROR)
             return { 'status_code':500, 'message':'Error de tipo ' + str(e) }
 
@@ -63,8 +64,8 @@ class EdicomAPIController(http.Controller):
                 msg = msg + ('' if albaran_lines[index]['ean'] else ' Linea: ' + str(index) + ': Falta el valor de: ean \n')
                 msg = msg + ('' if albaran_lines[index]['cenvfac'] else ' Linea: ' + str(index) + ': Falta el valor de: cenvfac \n')
                 msg = msg + ('' if albaran_lines[index]['lote'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \n')
-                msg = msg + ('' if albaran_lines[index]['feccon'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \n')
-                msg = msg + ('' if albaran_lines[index]['sscc1'] else ' Linea: ' + str(index) + ': Falta el valor de: lote \n')
+                msg = msg + ('' if albaran_lines[index]['feccon'] else ' Linea: ' + str(index) + ': Falta el valor de: feccon \n')
+                msg = msg + ('' if albaran_lines[index]['sscc1'] else ' Linea: ' + str(index) + ': Falta el valor de: sscc1 \n')
 
         if(msg != ''):
             raise exceptions.UserError("Faltan los siguientes datos " +  msg)
@@ -123,7 +124,7 @@ class EdicomAPIController(http.Controller):
             _logger.info("Se encontro en los stock moves del picking")
             return _stock_move
         else:
-            product_supplierinfo = request.env['product.supplierinfo'].search('&',[('product_code','=',linea_alb['ean']),('partner_id','=',purchase_partner_id)], limit=1)
+            product_supplierinfo = request.env['product.supplierinfo'].search(['&',('product_code','=',linea_alb['ean']),('name.id','=',purchase_partner_id)], limit=1)
             if(product_supplierinfo):
                 for picking in pickings:
                     for stock_move in picking.move_ids_without_package:
@@ -153,7 +154,7 @@ class EdicomAPIController(http.Controller):
                         'move_ids_without_package': [(4, _stock_move.id)]
                     })
                     _logger.info("Se lo creo a partir del producto existente")
-                    return _stock_move
+                    return _stock_move, pickings[0]
                 else:
                     raise exceptions.UserError("El codigo ean: " + linea_alb['ean'] + " no existe en productos")
 
@@ -170,7 +171,7 @@ class EdicomAPIController(http.Controller):
                 'company_id': company_id
             })
             _logger.info("Creo stock_production_lot")
-            return lot_search
+            return lot_id
 
     def getDateTime(self, date):
         if(date):
