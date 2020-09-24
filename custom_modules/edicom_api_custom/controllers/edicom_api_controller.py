@@ -23,6 +23,7 @@ class EdicomAPIController(http.Controller):
     @http.route('/edicom/input_desadv', auth='user', type='json', methods=['POST'], csrf=False)
     def edicom_api_order_desav(self):
         try:
+            #request.session.authenticate('Andres_Test', 'acastillo@develoop.net', 'Temp1243')
             #INICIALIZACION
             self.ID_LOG = 0
             self.INTENTS = 0
@@ -33,6 +34,7 @@ class EdicomAPIController(http.Controller):
             #CREACION DE LOG
             self.save_odoo_log(albaran_edicom['numcontrato'], 'En Proceso...', self.STATUS_PROCCESS)
             #request.env.cr.commit()
+            #self._cr.execute('SAVEPOINT import')
             _logger.info("Albaran y Detalle")
             _logger.info(albaran_edicom)
             _logger.info(albaran_lines)
@@ -44,10 +46,12 @@ class EdicomAPIController(http.Controller):
 
             self.save_odoo_log('', 'Completado exitosamente', self.STATUS_RECEIVED)
             #request.env.cr.commit()
+            #self._cr.execute('RELEASE SAVEPOINT import')
             return { 'status_code':200, 'message':'success' }
         except Exception as e:
             _logger.info(str(e))
             #request.env.cr.rollback()
+            #self._cr.execute('ROLLBACK TO SAVEPOINT import')
             if(e.name is None):
                 self.save_odoo_log('', 'Error general: ' + str(e), self.STATUS_ERROR)
             else:
@@ -79,23 +83,26 @@ class EdicomAPIController(http.Controller):
         
         purchase = request.env['purchase.order'].search([('name','=', albaran_edicom['numcontrato'])], limit=1)
         if(purchase):
-            pickings = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)
+            # pickings = request.env['stock.picking'].search(['&',('id','in', purchase.picking_ids.ids),('state','=','confirmed')], limit=1)
+            pickings = request.env['stock.picking'].search([('id','in', purchase.picking_ids.ids)], limit=1)
 
             if(purchase.order_line and pickings):
-                pickings[0].write({
+                pickings.write({
                     'carrier_tracking_ref': albaran_edicom['numalb'],
                     'date_done': self.getDateTime(albaran_edicom['fecenvio'])
                 })
                 for linea_alb in albaran_lines:
-                    _tuple_help = self.search_in_stocks_moves(linea_alb, pickings, purchase.partner_id.id)
-                    stock_move = _tuple_help[0]
-                    if(_tuple_help[1]):
-                        pickings[0].write({ 'move_ids_without_package': [(4, stock_move.id)] })
+                    stock_move = self.search_in_stocks_moves(linea_alb, pickings, purchase.partner_id.id)
                     stock_production_lot = self.search_stock_production_lot(stock_move.product_id.id, linea_alb['lote'], self.getDateTime(linea_alb['feccon']), company_id)
+
+                    qty = float(linea_alb['cenvfac'].replace(',', '.'))
+                    if(stock_move.product_id.x_studio_unidades_caja_ud and stock_move.product_id.x_studio_unidades_caja_ud > 0):
+                        qty = qty / stock_move.product_id.x_studio_unidades_caja_ud
+                        #qty = qty / stock_move.product_id.x_studio_unidades_caja_ud obtiene solo parte entera
 
                     stock_move_line = request.env['stock.move.line'].create({
                         'lot_id': stock_production_lot.id,
-                        'qty_done': float(linea_alb['cenvfac'].replace(',', '.')),
+                        'qty_done': qty,
                         'picking_id': pickings[0].id,
                         'move_id': stock_move.id,
                         'product_id': stock_move.product_id.id,
@@ -126,7 +133,7 @@ class EdicomAPIController(http.Controller):
                 break
         if(exists):
             _logger.info("Se encontro en los stock moves del picking")
-            return _stock_move, False
+            return _stock_move
         else:
             product_supplierinfo = request.env['product.supplierinfo'].search(['&',('product_code','=',linea_alb['ean']),('name.id','=',purchase_partner_id)], limit=1)
             if(product_supplierinfo):
@@ -140,7 +147,7 @@ class EdicomAPIController(http.Controller):
                         break
             if(exists):
                 _logger.info("Se encontro en supplierinfo del proveedor")
-                return _stock_move, False
+                return _stock_move
             else:
                 product_search = request.env['product.template'].search([('x_studio_ean13','=',linea_alb['ean'])], limit=1)
                 if(product_search):
@@ -154,8 +161,11 @@ class EdicomAPIController(http.Controller):
                         'location_dest_id': pickings[0].location_dest_id.id,
                         'state': 'confirmed'
                     })
+                    pickings[0].write({ 
+                        'move_ids_without_package': [(4, _stock_move.id)] 
+                    })
                     _logger.info("Se lo creo a partir del producto existente")
-                    return _stock_move, True
+                    return _stock_move
                 else:
                     raise exceptions.UserError("El codigo ean: " + linea_alb['ean'] + " no existe en productos")
 
