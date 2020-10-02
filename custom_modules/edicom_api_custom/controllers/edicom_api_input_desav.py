@@ -11,7 +11,7 @@ from odoo import exceptions
 
 _logger = logging.getLogger(__name__)
 
-class EdicomAPIController(http.Controller):
+class EdicomAPIInputDesav(http.Controller):
 
     STATUS_PROCCESS = 'status1'
     STATUS_RECEIVED = 'status2'
