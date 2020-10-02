@@ -29,7 +29,7 @@ class EdicomAPIInputOrder(http.Controller):
             self.INTENTS = 0
             body_data = json.loads(request.httprequest.data)
             order_edicom = body_data['order']
-            order_lines = body_data['orderDetail']
+            order_lines = body_data['order_detail']
             
             #CREACION DE LOG
             self.save_log_input_order(order_edicom['numped'], 'En Proceso...', self.STATUS_PROCCESS)
