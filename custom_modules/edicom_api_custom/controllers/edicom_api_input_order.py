@@ -102,6 +102,7 @@ class EdicomAPIInputOrder(http.Controller):
         client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
         client_shipping = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
         client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
+        warehouse_mb = request.env['stock.warehouse'].search([('name','=','MB COLD')], limit=1)
 
         date_order = ""
         if(order_edicom['fechatop']):
@@ -116,10 +117,10 @@ class EdicomAPIInputOrder(http.Controller):
             'partner_id': client.id,
             'partner_shipping_id': client_shipping.id,
             'partner_invoice_id': client_invoice.id,
-            # 'pricelist_id' => intval($inputOrder->tarifa),
-            # 'payment_term_id'=> intval($inputOrder->plazopago),
-            # 'user_id' => intval($inputOrder->comercial),
-            # 'warehouse_id' => intval($inputOrder->almacen)
+            'pricelist_id': client.property_product_pricelist.id,
+            'payment_term_id': client.property_payment_term_id.id,
+            'user_id': client.user_id.id,
+            'warehouse_id': warehouse_mb.id
         })
         #new_line.product_id_change()
         if(order):
@@ -127,12 +128,17 @@ class EdicomAPIInputOrder(http.Controller):
 
                 product_id = request.env['product.product'].search([('x_studio_ean13','=',order_lines[index]['refean'])], limit=1)
 
+                price_unit = 0
+                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id','=', product_id.product_tmpl_id.id)])
+                if(data):
+                    price_unit = data.fixed_price
+
                 request.env['sale.order.line'].create({
                     'order_id': order.id,
                     'product_id': product_id.id,
-                    'product_uom_qty': order_lines[index]['cantped']
-#					'price_unit' => floatval($detail->precio),
-#					'tax_id' => array($detail->impuestos)
+                    'product_uom_qty': order_lines[index]['cantped'],
+					'price_unit': price_unit,
+					'tax_id': product_id.taxes_id.ids
                 })
        
     def getDateTime(self, date):
