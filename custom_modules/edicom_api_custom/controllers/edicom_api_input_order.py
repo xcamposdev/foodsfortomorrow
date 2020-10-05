@@ -64,7 +64,7 @@ class EdicomAPIInputOrder(http.Controller):
         if(order_edicom):
             msg += '' if order_edicom['numped'] else 'Falta el valor de: numped \r\n'
             msg += '' if order_edicom['fecha'] else 'Falta el valor de: fecha \r\n'
-            msg += '' if order_edicom['fechaepr'] else 'Falta el valor de: fechaepr \r\n'
+            msg += '' if (order_edicom['fechaepr'] or order_edicom['fechatop']) else 'Falta el valor de: fechatop \r\n'
             
             if(order_edicom['cliente'] is None):
                 msg += 'Falta el valor de: cliente \r\n'
@@ -103,10 +103,16 @@ class EdicomAPIInputOrder(http.Controller):
         client_shipping = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
         client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
 
+        date_order = ""
+        if(order_edicom['fechatop']):
+            date_order = order_edicom['fechatop']
+        else:
+            date_order = order_edicom['fechaepr']
+
         order = request.env['sale.order'].create({
             'client_order_ref': order_edicom['numped'],
             'date_order': self.getDateTime(order_edicom['fecha']),
-            'commitment_date': self.getDateTime(order_edicom['fechaepr']),
+            'commitment_date': self.getDateTime(date_order),
             'partner_id': client.id,
             'partner_shipping_id': client_shipping.id,
             'partner_invoice_id': client_invoice.id,
