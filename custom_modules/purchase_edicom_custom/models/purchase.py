@@ -62,29 +62,30 @@ class edicom_form(models.Model):
         detail = []
         if(self.order_line):
             for order_line in self.order_line:
-                # Check REFEAN
-                refean = order_line.product_id.x_studio_ean13
-                product_template_id = self.env['product.product'].search([('id','=',order_line.product_id.id)], limit=1)
-                supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',product_template_id.product_tmpl_id.id),('name', '=',self.partner_id.id)], limit=1)
-                if(supplier):
-                    if(supplier.product_code):
-                        refean = supplier.product_code
+                if(order_line.display_type == False):
+                    # Check REFEAN
+                    refean = order_line.product_id.x_studio_ean13
+                    product_template_id = self.env['product.product'].search([('id','=',order_line.product_id.id)], limit=1)
+                    supplier = self.env['product.supplierinfo'].search([('product_tmpl_id','=',product_template_id.product_tmpl_id.id),('name', '=',self.partner_id.id)], limit=1)
+                    if(supplier):
+                        if(supplier.product_code):
+                            refean = supplier.product_code
 
-                quantity = order_line.product_qty
-                if(order_line.product_id.x_studio_unidades_caja_ud > 0):
-                    quantity = order_line.product_qty * order_line.product_id.x_studio_unidades_caja_ud 
+                    quantity = order_line.product_qty
+                    if(order_line.product_id.x_studio_unidades_caja_ud > 0):
+                        quantity = order_line.product_qty * order_line.product_id.x_studio_unidades_caja_ud 
 
-                order_line.product_id
-                detail.append({
-                    'clave1': name,
-                    'clave2': order_line.id or "",
-                    'refean': refean or "",
-                    'dun14': order_line.product_id.x_studio_gtin14 or "",
-                    'refetiq': order_line.product_id.x_studio_gtin14 or "",
-                    'descmer': order_line.product_id.name or "",
-                    'cantped': quantity or "0",
-                    'cantue': order_line.product_id.x_studio_unidades_caja_ud
-                })
+                    order_line.product_id
+                    detail.append({
+                        'clave1': name,
+                        'clave2': order_line.id or "",
+                        'refean': refean or "",
+                        'dun14': order_line.product_id.x_studio_gtin14 or "",
+                        'refetiq': order_line.product_id.x_studio_gtin14 or "",
+                        'descmer': order_line.product_id.name or "",
+                        'cantped': quantity or "0",
+                        'cantue': order_line.product_id.x_studio_unidades_caja_ud
+                    })
 
         current_register_log = self.env['x_orders_salida'].create({
             'x_name': self.name,
