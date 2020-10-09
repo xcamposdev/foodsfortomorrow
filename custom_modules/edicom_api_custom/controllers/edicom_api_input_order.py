@@ -76,10 +76,10 @@ class EdicomAPIInputOrder(http.Controller):
             elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])])):
                 msg += 'No se encontro el receptor con GLN: ' + str(order_edicom['receptor']) + '\r\n'
 
-            if(order_edicom['qpaga'] is None):
-                msg += 'Falta el valor de: qpaga \r\n'
-            elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])])):
-                msg += 'No se encontro el qpaga con GLN: ' + str(order_edicom['qpaga']) + '\r\n'
+            # if(order_edicom['qpaga'] is None):
+            #     msg += 'Falta el valor de: qpaga \r\n'
+            # elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])])):
+            #     msg += 'No se encontro el qpaga con GLN: ' + str(order_edicom['qpaga']) + '\r\n'
 
         if(order_lines):
             for index in range(len(order_lines)):
@@ -102,13 +102,17 @@ class EdicomAPIInputOrder(http.Controller):
         client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
         client_shipping = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
         client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
+        if(client_invoice):
+            client_invoice = client.parent_id if client.parent_id else client
         warehouse_mb = request.env['stock.warehouse'].search([('name','=','MB COLD')], limit=1)
 
         commitment_date = False
-        if(order_edicom['fechatop'] or order_edicom['fechaepr']):
-            commitment_date = order_edicom['fechaere'] or False
-        elif(order_edicom['fechaepr']):
-            commitment_date = order_edicom['fechatop'] or False
+        if order_edicom['fechaere']:
+            commitment_date = order_edicom['fechaere']
+        elif order_edicom['fechatop']:
+            commitment_date = order_edicom['fechatop']
+        elif order_edicom['fechaepr']:
+            commitment_date = order_edicom['fechaepr']
 
         order = request.env['sale.order'].create({
             'client_order_ref': order_edicom['numped'],
@@ -149,7 +153,7 @@ class EdicomAPIInputOrder(http.Controller):
             _datetime = datetime.date(yyyy, mm, dd)
             return _datetime
         else:
-            return ""
+            return False
 
     def save_log_input_order(self, name, description, status):
         try:
