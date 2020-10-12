@@ -64,7 +64,7 @@ class EdicomAPIInputOrder(http.Controller):
         if(order_edicom):
             msg += '' if order_edicom['numped'] else 'Falta el valor de: numped \r\n'
             msg += '' if order_edicom['fecha'] else 'Falta el valor de: fecha \r\n'
-            msg += '' if (order_edicom['fechaepr'] or order_edicom['fechatop']) else 'Falta el valor de: fechatop \r\n'
+            msg += '' if (order_edicom['fechaepr'] or order_edicom['fechatop'] or order_edicom['fechaere']) else 'Falta el valor de: fechaepr o fechatop o fechaere \r\n'
             
             if(order_edicom['cliente'] is None):
                 msg += 'Falta el valor de: cliente \r\n'
@@ -76,10 +76,10 @@ class EdicomAPIInputOrder(http.Controller):
             elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])])):
                 msg += 'No se encontro el receptor con GLN: ' + str(order_edicom['receptor']) + '\r\n'
 
-            if(order_edicom['qpaga'] is None):
-                msg += 'Falta el valor de: qpaga \r\n'
-            elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])])):
-                msg += 'No se encontro el qpaga con GLN: ' + str(order_edicom['qpaga']) + '\r\n'
+            # if(order_edicom['qpaga'] is None):
+            #     msg += 'Falta el valor de: qpaga \r\n'
+            # elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])])):
+            #     msg += 'No se encontro el qpaga con GLN: ' + str(order_edicom['qpaga']) + '\r\n'
 
         if(order_lines):
             for index in range(len(order_lines)):
@@ -102,18 +102,22 @@ class EdicomAPIInputOrder(http.Controller):
         client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
         client_shipping = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
         client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
+        if(client_invoice):
+            client_invoice = client.parent_id if client.parent_id else client
         warehouse_mb = request.env['stock.warehouse'].search([('name','=','MB COLD')], limit=1)
 
-        date_order = ""
-        if(order_edicom['fechatop']):
-            date_order = order_edicom['fechatop']
-        else:
-            date_order = order_edicom['fechaepr']
+        commitment_date = False
+        if order_edicom['fechaere']:
+            commitment_date = order_edicom['fechaere']
+        elif order_edicom['fechatop']:
+            commitment_date = order_edicom['fechatop']
+        elif order_edicom['fechaepr']:
+            commitment_date = order_edicom['fechaepr']
 
         order = request.env['sale.order'].create({
             'client_order_ref': order_edicom['numped'],
             'date_order': self.getDateTime(order_edicom['fecha']),
-            'commitment_date': self.getDateTime(date_order),
+            'commitment_date': self.getDateTime(commitment_date),
             'partner_id': client.id,
             'partner_shipping_id': client_shipping.id,
             'partner_invoice_id': client_invoice.id,
@@ -149,7 +153,7 @@ class EdicomAPIInputOrder(http.Controller):
             _datetime = datetime.date(yyyy, mm, dd)
             return _datetime
         else:
-            return ""
+            return False
 
     def save_log_input_order(self, name, description, status):
         try:
