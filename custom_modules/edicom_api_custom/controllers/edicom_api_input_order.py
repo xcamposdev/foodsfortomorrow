@@ -66,10 +66,10 @@ class EdicomAPIInputOrder(http.Controller):
             msg += '' if order_edicom['fecha'] else 'Falta el valor de: fecha \r\n'
             msg += '' if (order_edicom['fechaepr'] or order_edicom['fechatop'] or order_edicom['fechaere']) else 'Falta el valor de: fechaepr o fechatop o fechaere \r\n'
             
-            if(order_edicom['cliente'] is None):
-                msg += 'Falta el valor de: cliente \r\n'
-            elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])])):
-                msg += 'No se encontro el cliente con GLN: ' + str(order_edicom['cliente']) + '\r\n'
+            # if(order_edicom['cliente'] is None):
+            #     msg += 'Falta el valor de: cliente \r\n'
+            # elif(not request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])])):
+            #     msg += 'No se encontro el cliente con GLN: ' + str(order_edicom['cliente']) + '\r\n'
             
             if(order_edicom['receptor'] is None):
                 msg += 'Falta el valor de: receptor \r\n'
@@ -99,10 +99,10 @@ class EdicomAPIInputOrder(http.Controller):
         _logger.info('Order de entrada: Inicio del proceso: process_order')
 
         # super(EdicomAPIInputOrder, self).onchange_partner_id()
-        client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
-        client_shipping = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
+        # client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
+        client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
         client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
-        if(client_invoice):
+        if(not client_invoice):
             client_invoice = client.parent_id if client.parent_id else client
         warehouse_mb = request.env['stock.warehouse'].search([('name','=','MB COLD')], limit=1)
 
@@ -119,7 +119,7 @@ class EdicomAPIInputOrder(http.Controller):
             'date_order': self.getDateTime(order_edicom['fecha']),
             'commitment_date': self.getDateTime(commitment_date),
             'partner_id': client.id,
-            'partner_shipping_id': client_shipping.id,
+            'partner_shipping_id': client.id,
             'partner_invoice_id': client_invoice.id,
             'pricelist_id': client.property_product_pricelist.id,
             'payment_term_id': client.property_payment_term_id.id,
