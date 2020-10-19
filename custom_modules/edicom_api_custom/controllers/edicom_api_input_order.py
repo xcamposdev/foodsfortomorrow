@@ -101,9 +101,12 @@ class EdicomAPIInputOrder(http.Controller):
         # super(EdicomAPIInputOrder, self).onchange_partner_id()
         # client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['cliente'])], limit=1)
         client = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['receptor'])], limit=1)
-        client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
-        if(not client_invoice):
-            client_invoice = client.parent_id if client.parent_id else client
+        if(order_edicom['qpaga'] and order_edicom['qpaga']!=''):
+            client_invoice = request.env['res.partner'].search([('x_studio_gln','=',order_edicom['qpaga'])], limit=1)
+            if(not client_invoice):
+                client_invoice = client.parent_id if client.parent_id else client
+        else:
+            client_invoice = client.parent_id if client.parent_id else client    
         warehouse_mb = request.env['stock.warehouse'].search([('name','=','MB COLD')], limit=1)
 
         commitment_date = False
@@ -131,16 +134,22 @@ class EdicomAPIInputOrder(http.Controller):
             for index in range(len(order_lines)):
 
                 product_id = request.env['product.product'].search([('x_studio_ean13','=',order_lines[index]['refean'])], limit=1)
-
                 price_unit = 0
-                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id','=', product_id.product_tmpl_id.id)])
+                quantity = order_lines[index]['cantped']
+
+                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id.x_studio_ean13','=',order_lines[index]['refean'])],limit=1)
                 if(data):
+                    product_id = data.product_tmpl_id.product_variant_id
                     price_unit = data.fixed_price
+                    
+                if(product_id.x_studio_unidades_caja_ud and product_id.x_studio_unidades_caja_ud > 0):
+                    quantity = quantity / product_id.x_studio_unidades_caja_ud
+
 
                 request.env['sale.order.line'].create({
                     'order_id': order.id,
                     'product_id': product_id.id,
-                    'product_uom_qty': order_lines[index]['cantped'],
+                    'product_uom_qty': quantity,
 					'price_unit': price_unit,
 					'tax_id': product_id.taxes_id.ids
                 })
