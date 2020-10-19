@@ -137,7 +137,7 @@ class EdicomAPIInputOrder(http.Controller):
                 price_unit = 0
                 quantity = order_lines[index]['cantped']
 
-                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id.x_studio_ean13','=',order_lines[index]['refean'])])
+                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id.x_studio_ean13','=',order_lines[index]['refean'])],limit=1)
                 if(data):
                     product_id = data.product_tmpl_id.product_variant_id
                     price_unit = data.fixed_price
