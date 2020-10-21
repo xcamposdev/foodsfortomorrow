@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE xml>
+<odoo>
+
+    <template id="assets_forecast_custom" inherit_id="web.assets_backend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/forecast_custom/static/src/js/forecast_custom.js"></script>
+        </xpath>
+    </template>
+
+</odoo>
