@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
   <template xml:space="preserve">
+    <t t-log="widget"/>
     <t t-extend="ListView.buttons">
-      <t t-jquery="button.o_button_import" t-operation="after">
-        <button t-if="widget.modelName == 'x_forecast_catalogo'" type="button" class="btn btn-primary o_button_generate" >Generar</button>
-      </t>
+        <t t-jquery="button.o_list_export_xlsx" t-operation="after">
+            <button t-if="widget.modelName == 'x_forecast_catalogo'" type="button" class="btn btn-primary o_button_generate" accesskey="g">Generar</button>
+        </t>
     </t>
   </template>

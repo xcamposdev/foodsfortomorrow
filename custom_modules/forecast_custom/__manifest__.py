@@ -5,7 +5,7 @@
     'author': 'Develoop Software S.A.',
     'category': 'Forecast',
     'website': 'https://www.develoop.net/',
-    'depends': ['base'],
+    'depends': ['base','web'],
     'summary': 'Forecast custom funcionality',
     'description': """
         Forecast custom funcionality
