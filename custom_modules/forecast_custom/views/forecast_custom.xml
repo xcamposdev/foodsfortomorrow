@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Información">
                 <group string="Información General">
-                    <field name="date" />
+                    <field name="date_generate" />
                 </group>
                 <footer>
                     <button name="generate_forecast_ventas" string="Generar" type="object" class="btn-primary"/>
