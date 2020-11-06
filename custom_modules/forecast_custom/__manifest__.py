@@ -5,14 +5,16 @@
     'author': 'Develoop Software S.A.',
     'category': 'Forecast',
     'website': 'https://www.develoop.net/',
-    'depends': ['base','web'],
+    'depends': ['base','web','analytic','product'],
     'summary': 'Forecast custom funcionality',
     'description': """
         Forecast custom funcionality
         """,
     'data': [
+        'security/ir.model.access.csv',
         'views/assets.xml',
-    	'views/forecast_custom.xml',
+        'views/forecast_custom.xml',
+        'wizard/forecast_wizard.xml',
     ],
     'qweb': [
         "static/src/xml/forecast_custom_qweb.xml",

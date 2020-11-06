@@ -12,7 +12,7 @@ odoo.define('forecast_custom.custom_javascript', function (require) {
     var IncludeListView = {
         renderButtons: function() {
             this._super.apply(this, arguments);
-            if (this.modelName === "x_forecast_catalogo") {
+            if (this.modelName === "x.forecast.catalog") {
                 if (this.$buttons) {
                     this.$buttons.find('.o_button_generate').click(this.proxy('open_wizard_custom'));
                 }
@@ -26,7 +26,7 @@ odoo.define('forecast_custom.custom_javascript', function (require) {
                 {
                     name: "Generación de datos mensual",
                     type: 'ir.actions.act_window',
-                    res_model: 'x.forecast.catalogo.wizard',
+                    res_model: 'x.forecast.catalog.wizard',
                     view_mode: 'form',
                     view_type: 'form',
                     target: 'new',
