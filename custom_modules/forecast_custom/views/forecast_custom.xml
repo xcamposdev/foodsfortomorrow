@@ -108,15 +108,15 @@
     <!-- CRON JOB -->
     <record id="forecast_custom_cronjob_change_locked" model="ir.cron">
         <field name="name">Cambiar campo bloqueado</field>
-        <field name="model_id" ref="x.forecast.sale" />
+        <field name="model_id" ref="forecast_custom.model_x_forecast_sale"/>
+        <field name="user_id" ref="base.user_root" />
+        <field name="interval_number">1</field>     <!-- Número de veces que se llamará  -->
+        <field name="interval_type">days</field> <!-- minutes, hours, days, weeks, months -->
+        <field name="active" eval="True" />
+        <field name="numbercall">-1</field>         <!-- cuantas veces se ejecuta, -1 significa infinito -->
         <field name="type">ir.actions.server</field>
         <field name="state">code</field>
         <field name="code">model.forecast_change_field_locked()</field>
-        <field name="interval_number">1</field>     <!-- Número de veces que se llamará  -->
-        <field name="interval_type">days</field> <!-- minutes, hours, days, weeks, months -->
-        <field name="numbercall">-1</field>         <!-- cuantas veces se ejecuta, -1 significa infinito -->
-        <field name="active" eval="True" />
-        <field name="user_id" ref="base.user_root" />
         <field name="doall">1</field>               <!-- booleano que indica si las ocurrencias perdidas deben ejecutarse cuando se reinicia el servidor. -->
         <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
         <!-- <field name="priority" eval="10" /> -->
