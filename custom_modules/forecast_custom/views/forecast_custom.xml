@@ -7,7 +7,7 @@
         <field name="res_model">x.forecast.sale</field>
         <field name="view_mode">tree,pivot</field>
         <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
-        <field name="context">{'default_is_company': True, 'is_tree': True}</field>
+        <field name="context">{'default_is_company': True}</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
             Create a data of sales in your catalog
@@ -53,7 +53,7 @@
         <field name="res_model">x.forecast.catalog</field>
         <field name="view_mode">tree</field>
         <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
-        <field name="context">{'default_is_company': True, 'is_tree': True}</field>
+        <field name="context">{'default_is_company': True}</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
             Create data in your catalog
@@ -70,7 +70,7 @@
         <field name="arch" type="xml">
             <tree string="Ventas" editable="bottom">
                 <field name="x_producto" />
-                <field name="x_comercial" />
+                <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
                 <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}"/>
                 <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
                 <field name="x_tipo"/>
@@ -85,13 +85,19 @@
         <field name="act_window_id" ref="action_forecast_catalog"/>
     </record>
 
-    
+
+    <record id="action_forecast_report_all_view_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">pivot</field>
+        <!-- <field name="view_id" ref="forecast_custom.view_forecast_catalog_tree"/> -->
+        <field name="act_window_id" ref="action_forecast_report_all"/>
+    </record>
 
 
     <menuitem id="menu_forecast"
         name="Forecast"
         web_icon="forecast_custom,static/description/icon.png"
-        sequence="3"/>
+        sequence="4"/>
 
     <menuitem id="x_forecast_menu_sales"
         name="Ventas"
@@ -104,6 +110,18 @@
         action="action_forecast_catalog"
         parent="menu_forecast"
         sequence="2"/>
+
+    <menuitem id="x_forecast_menu_report"
+        name="Informes"
+        parent="menu_forecast"
+        sequence="3"/>
+
+    <menuitem id="x_forecast_menu_report_all"
+        name="Forecast"
+        action="action_forecast_report_all"
+        parent="x_forecast_menu_report"
+        sequence="1"/>
+
 
     <!-- CRON JOB -->
     <record id="forecast_custom_cronjob_change_locked" model="ir.cron">
