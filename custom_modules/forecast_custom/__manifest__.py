@@ -15,6 +15,7 @@
         'views/assets.xml',
         'views/forecast_custom.xml',
         'wizard/forecast_wizard.xml',
+        'report/forecast_report_view.xml',
     ],
     'qweb': [
         "static/src/xml/forecast_custom_qweb.xml",

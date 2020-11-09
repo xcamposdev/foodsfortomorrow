@@ -21,8 +21,6 @@ class forecast_wizard_custom_0(models.TransientModel):
         self.ensure_one()
         startMonth = datetime.datetime(self.date_generate.year, self.date_generate.month, 1)
         endMonth = startMonth + relativedelta(months=1)
-        _logger.info(startMonth)
-        _logger.info(endMonth)
         
         exists = self.env['x.forecast.sale'].search(['&','&',('x_comercial','=',self.env.user.id),('x_mes','>=',startMonth),('x_mes','<',endMonth)], limit=1)
         if(exists):
@@ -46,7 +44,8 @@ class forecast_wizard_custom_0(models.TransientModel):
                     'x_contacto': catalogo.x_contacto.id,
                     'x_cuenta_analitica': catalogo.x_cuenta_analitica.id,
                     'x_comercial': catalogo.x_comercial.id,
-                    'x_locked': False
+                    'x_locked': False,
+                    'x_forecast_catalog_id': catalogo.id
                 })
         
         return {

@@ -31,6 +31,8 @@ class ForecastSales(models.Model):
         ], string="Tipo", readonly=True)
     x_unidades = fields.Integer(string="Unidades")
     x_locked = fields.Boolean("Bloqueado", default=False)
+    
+    x_forecast_catalog_id = fields.Many2one('x.forecast.catalog', required=True, ondelete='cascade', index=True, copy=False)
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -47,10 +49,10 @@ class ForecastSales(models.Model):
 
     @api.onchange('x_unidades')
     def x_unidades_change(self):
-        self.x_cajas = self.x_unidades / self.x_producto.x_studio_unidades_por_caja
+        self.x_cajas = self.x_unidades / (self.x_producto.x_studio_unidades_por_caja if self.x_producto.x_studio_unidades_por_caja > 0 else 1)
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        resto = self.x_unidades % self.x_producto.x_studio_unidades_por_caja
+        resto = self.x_unidades % (self.x_producto.x_studio_unidades_por_caja if self.x_producto.x_studio_unidades_por_caja > 0 else 1)
         #recursive_onchanges
         if(resto > 0):
             return {
@@ -104,6 +106,12 @@ class ForecastCatalog(models.Model):
         ('canal','Canal')
         ], string="Tipo", required=True)
 
+    x_forecast_sales = fields.One2many('x.forecast.sale', 'x_forecast_catalog_id', copy=True, auto_join=True)
+    # x_order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
+    
+
+    # order_id = fields.Many2one('sale.order', string='Order Reference', required=True, ondelete='cascade', index=True, copy=False)
+    # order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
