@@ -14,15 +14,15 @@ class ForecastReport(models.Model):
     _order = 'x_date desc'
 
     x_rotacion = fields.Float(string='Rotación', readonly=True)
-    x_unidades = fields.Integer(string="Unidades", readonly=True)
     x_kg = fields.Float(string="Kg", readonly=True)
     x_cajas = fields.Integer(string="Cajas", readonly=True)
-    
-    x_date = fields.Date(string="Forecast Fecha", readonly=True)
-    x_producto = fields.Many2one('product.product', string='Product', readonly=True)
-    x_client = fields.Many2one('res.partner', string='Partner', readonly=True)
-    x_real_previsto = fields.Float(string='Real', readonly=True)
+    x_unidades = fields.Integer(string="Unidades", readonly=True) #unidades reales vendidas
+    x_forecast = fields.Float(string='Forecast', readonly=True) #unidades puestas a mano
     x_desviacion = fields.Float(string='Desviación', readonly=True)
+
+    x_date = fields.Date(string="Mes", readonly=True)
+    x_producto = fields.Many2one('product.product', string='Producto', readonly=True)
+    x_client = fields.Many2one('res.partner', string='Cliente', readonly=True)
 
     @api.model
     def _select(self):
@@ -30,14 +30,15 @@ class ForecastReport(models.Model):
             SELECT
                 sale.id,
                 sale.x_rotacion AS x_rotacion, 
-                sale.x_unidades AS x_unidades, 
                 sale.x_kg AS x_kg, 
                 sale.x_cajas AS x_cajas,
-	            sale.x_mes AS x_date, 
+                sum(_sale.Cantidad) AS x_unidades, 
+	            sale.x_unidades AS x_forecast,
+                sale.x_unidades / COALESCE(sum(_sale.Cantidad),1) AS x_desviacion,
+
+                sale.x_mes AS x_date, 
                 sale.x_producto AS x_producto, 
-                sale.x_contacto AS x_client, 
-                sale.x_unidades AS x_real_previsto,
-	            0 AS x_desviacion
+                sale.x_contacto AS x_client
         '''
 
     @api.model
@@ -45,6 +46,17 @@ class ForecastReport(models.Model):
         return '''
             FROM x_forecast_catalog catalog 
                 INNER JOIN x_forecast_sale sale ON catalog.Id = x_forecast_catalog_id
+                LEFT JOIN 
+                (
+                    SELECT sale_order.partner_invoice_id, sale_order.date_order, sale_order_line.product_id, CASE WHEN product_template.x_studio_unidades_por_caja > 0 
+                        THEN sale_order_line.product_uom_qty * product_template.x_studio_unidades_por_caja ELSE sale_order_line.product_uom_qty END AS Cantidad
+                    FROM sale_order INNER JOIN sale_order_line on sale_order.id = sale_order_line.order_id
+                                    INNER JOIN product_product on sale_order_line.product_id = product_product.id
+                                    INNER JOIN product_template on product_product.product_tmpl_id = product_template.id
+                    WHERE sale_order.state='sale'
+                ) as _sale on _sale.product_id = sale.x_producto 
+                and _sale.partner_invoice_id = sale.x_contacto 
+                and _sale.date_order >= (select date_trunc('month', sale.x_mes)) and _sale.date_order < (select (select date_trunc('month', sale.x_mes)) + interval '1 month' * 1)
         '''
 
     @api.model
