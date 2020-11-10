@@ -24,7 +24,8 @@
         <field name="name">Forecast Análisis</field>
         <field name="res_model">x.forecast.report</field>
         <field name="view_mode">pivot</field>
-        <field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by':['x_date'], 'group_by_no_leaf':1}</field>
+        <field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by_no_leaf':1}</field>
+        <!-- <field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by':['x_date'], 'group_by_no_leaf':1}</field> -->
         <!-- <field name="context">{'search_default_current':1, 'search_default_customer': 1, 'group_by':['invoice_date'], 'group_by_no_leaf':1}</field> -->
         <!-- <field name="search_view_id" ref="view_forecast_report_search"/> -->
         <field name="view_id"></field>  <!-- force empty-->
