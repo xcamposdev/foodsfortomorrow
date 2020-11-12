@@ -7,7 +7,7 @@ from functools import lru_cache
 
 
 class ForecastReportAnalitica(models.Model):
-    _name = "x.forecast.report.analitica"
+    _name = "x.forecast.report.analytic"
     _description = "Forecast Statistics Analitic"
     _auto = False
     _rec_name = 'x_date'
