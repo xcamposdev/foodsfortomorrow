@@ -1,0 +1,8 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_x_forecast_sale,x.forecast.sale,model_x_forecast_sale,base.group_user,1,1,1,1
+access_x_forecast_catalog,x.forecast.catalog,model_x_forecast_catalog,base.group_user,1,1,1,1 
+access_x_forecast_report,x.forecast.report,model_x_forecast_report,base.group_user,1,1,1,1 
+access_x_forecast_report_analytic,x.forecast.report.analytic,model_x_forecast_report_analytic,base.group_user,1,1,1,1 
+access_account_analytic_account,account.analytic.account,analytic.model_account_analytic_account,base.group_user,1,0,0,0
+access_product_template,product.template,product.model_product_template,base.group_user,1,0,0,0
+access_product_product,product.product,product.model_product_product,base.group_user,1,0,0,0
