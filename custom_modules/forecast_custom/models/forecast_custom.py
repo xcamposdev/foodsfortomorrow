@@ -37,6 +37,7 @@ class ForecastSales(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         # if(self._context.get('is_tree',False)):
+        
         args += [('x_comercial', '=', self.env.user.id)]
         return super(ForecastSales, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
 
@@ -82,9 +83,11 @@ class ForecastSales(models.Model):
             }
 
     def forecast_change_field_locked(self):
-
         if(datetime.date.today().day > 25):
-            test=""
+            forecast = self.env['x.forecast.sale'].search([('x_mes','<=',datetime.date.today()),('x_locked','!=',True)])
+            for record in forecast:
+                record.x_locked = True
+            
 
 class ForecastCatalog(models.Model):
 
