@@ -50,6 +50,7 @@ class mrp_production_schedule_custom_0(models.Model):
             data = self.moq_of_product(production_schedule.product_tmpl_id)
             quantity_week = data['quantity_week']
             moq = data['moq']
+            unidad_redondeo = data['unidad_redondeo']
             ########################################
 
             rounding = production_schedule.product_id.uom_id.rounding
@@ -105,6 +106,9 @@ class mrp_production_schedule_custom_0(models.Model):
                         forecast_values['replenish_qty'] = 0
                     else:
                         replenish_qty = production_schedule._get_replenish_qty(starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values['indirect_demand_qty'])
+                        if (replenish_qty % unidad_redondeo) > 0:
+                            resto = unidad_redondeo - (replenish_qty % unidad_redondeo)
+                            replenish_qty = replenish_qty + resto
                         replenish_qty = float_round(replenish_qty, precision_rounding=rounding)
                         if(replenish_qty > 0 and replenish_qty < moq):
                             forecast_values['replenish_qty'] = moq
@@ -218,7 +222,7 @@ class mrp_production_schedule_custom_0(models.Model):
 
 
     def moq_of_product(self, product_tmpl_id):
-        toReturn = { "route": "", "quantity_week": 0, "moq": 0 }
+        toReturn = { "route": "", "quantity_week": 0, "moq": 0, "unidad_redondeo": 0 }
         if(product_tmpl_id):
             if(product_tmpl_id.route_ids):
                 for route in product_tmpl_id.route_ids:
@@ -237,6 +241,7 @@ class mrp_production_schedule_custom_0(models.Model):
                                 moq = moq + resto
                             
                             toReturn['moq'] = moq
+                            toReturn['unidad_redondeo'] = unidad_redondeo
                             break
 
                     if(route.name == "Fabricar"):
@@ -254,6 +259,7 @@ class mrp_production_schedule_custom_0(models.Model):
                                 moq = moq + resto
 
                             toReturn['moq'] = moq
+                            toReturn['unidad_redondeo'] = unidad_redondeo
                             break
 
         return toReturn
@@ -278,7 +284,7 @@ class mrp_production_schedule_custom_0(models.Model):
                     ])
                 forecast_unit = 0
                 for fore in forecast:
-                    forecast_unit += fore.x_unidades
+                    forecast_unit += fore.x_cajas
                 data.append({
                     'start_month':start_month,
                     'end_month':end_month,
