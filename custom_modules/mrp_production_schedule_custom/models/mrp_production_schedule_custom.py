@@ -230,12 +230,12 @@ class mrp_production_schedule_custom_0(models.Model):
 
                             peso_umb_gr = (product_tmpl_id.x_studio_unidades_caja_ud + product_tmpl_id.x_studio_n_bolsas) * product_tmpl_id.x_studio_peso_neto_unitario_gr
                             moq = (product_tmpl_id.seller_ids[0].x_studio_moq_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
-                            unidad_redondeo = product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg if product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg > 0 else 1
+                            unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
 
                             if (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
                                 moq = moq + resto
-
+                            
                             toReturn['moq'] = moq
                             break
 
@@ -247,7 +247,7 @@ class mrp_production_schedule_custom_0(models.Model):
 
                             peso_umb_gr = (product_tmpl_id.x_studio_unidades_caja_ud + product_tmpl_id.x_studio_n_bolsas) * product_tmpl_id.x_studio_peso_neto_unitario_gr
                             moq = product_tmpl_id.bom_ids[-1].x_studio_moq_kg * 1000 / (peso_umb_gr if peso_umb_gr > 0 else 1)
-                            unidad_redondeo = product_tmpl_id.bom_ids[-1].x_studio_unidad_de_redondeo_kg if product_tmpl_id.bom_ids[-1].x_studio_unidad_de_redondeo_kg > 0 else 1
+                            unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
                             
                             if (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
@@ -270,7 +270,12 @@ class mrp_production_schedule_custom_0(models.Model):
             if(date_start.month not in forecast_month):
                 start_month = datetime.datetime(date_start.year, date_start.month, 1)
                 end_month = start_month + relativedelta(months=1)
-                forecast = self.env['x.forecast.sale'].search([('x_producto','=',result.product_id.id),('x_mes','>=',start_month),('x_mes','<',end_month)])
+                forecast = self.env['x.forecast.sale'].search([
+                    ('x_producto','=',result.product_id.id),
+                    ('x_mes','>=',start_month),
+                    ('x_mes','<',end_month),
+                    ('x_locked','=',True)
+                    ])
                 forecast_unit = 0
                 for fore in forecast:
                     forecast_unit += fore.x_unidades
