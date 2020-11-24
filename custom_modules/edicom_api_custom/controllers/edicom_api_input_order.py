@@ -127,32 +127,28 @@ class EdicomAPIInputOrder(http.Controller):
             'pricelist_id': client.property_product_pricelist.id,
             'payment_term_id': client.property_payment_term_id.id,
             'user_id': client.user_id.id,
-            'warehouse_id': warehouse_mb.id
+            'warehouse_id': warehouse_mb.id,
+            'order_line': []
         })
         #new_line.product_id_change()
         if(order):
             for index in range(len(order_lines)):
 
                 product_id = request.env['product.product'].search([('x_studio_ean13','=',order_lines[index]['refean'])], limit=1)
-                price_unit = 0
                 quantity = order_lines[index]['cantped']
 
-                data = request.env['product.pricelist.item'].search([('pricelist_id','=',client.property_product_pricelist.id),('product_tmpl_id.x_studio_ean13','=',order_lines[index]['refean'])],limit=1)
-                if(data):
-                    product_id = data.product_tmpl_id.product_variant_id
-                    price_unit = data.fixed_price
-                    
                 if(product_id.x_studio_unidades_caja_ud and product_id.x_studio_unidades_caja_ud > 0):
-                    quantity = quantity / product_id.x_studio_unidades_caja_ud
+                    quantity = float(quantity) / float(product_id.x_studio_unidades_caja_ud)
 
-
-                request.env['sale.order.line'].create({
+                line = request.env['sale.order.line'].create({
                     'order_id': order.id,
                     'product_id': product_id.id,
                     'product_uom_qty': quantity,
-					'price_unit': price_unit,
-					'tax_id': product_id.taxes_id.ids
+					#'price_unit': price_unit,
+					#'tax_id': product_id.taxes_id.ids
                 })
+                line._onchange_discount()
+                # line.product_id_change()
        
     def getDateTime(self, date):
         if(date):
