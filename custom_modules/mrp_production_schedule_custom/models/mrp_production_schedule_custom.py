@@ -245,7 +245,7 @@ class mrp_production_schedule_custom_0(models.Model):
                             break
 
                     if(route.name == "Fabricar"):
-                        toReturn['route'] = "Comprar"
+                        toReturn['route'] = "Fabricar"
                         if(product_tmpl_id.bom_ids):
                             time_days = product_tmpl_id.bom_ids[-1].x_studio_lead_time
                             toReturn['quantity_week'] = math.ceil(time_days/7)
