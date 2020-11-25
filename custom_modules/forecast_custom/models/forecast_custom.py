@@ -9,7 +9,7 @@ from odoo.exceptions import AccessError, UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
 
-
+#x_studio_unidades_por_caja
 class ForecastSales(models.Model):
     
     _name = 'x.forecast.sale'
@@ -37,6 +37,7 @@ class ForecastSales(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         # if(self._context.get('is_tree',False)):
+        
         args += [('x_comercial', '=', self.env.user.id)]
         return super(ForecastSales, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
 
@@ -49,29 +50,32 @@ class ForecastSales(models.Model):
 
     @api.onchange('x_unidades')
     def x_unidades_change(self):
-        self.x_cajas = self.x_unidades / (self.x_producto.x_studio_unidades_por_caja if self.x_producto.x_studio_unidades_por_caja > 0 else 1)
+        unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
+        self.x_cajas = self.x_unidades / (unidades_cajas if unidades_cajas > 0 else 1)
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        resto = self.x_unidades % (self.x_producto.x_studio_unidades_por_caja if self.x_producto.x_studio_unidades_por_caja > 0 else 1)
+        resto = self.x_unidades % (unidades_cajas if unidades_cajas > 0 else 1)
         #recursive_onchanges
         if(resto > 0):
             return {
                 'warning':{
                     'title': "Información: División inexacta",
-                    'message': "La división entre " + str(self.x_unidades) + " (unidades) y " + str(self.x_producto.x_studio_unidades_por_caja) + " (unidades por caja) genera un resto de " + str(resto)
+                    'message': "La división entre " + str(self.x_unidades) + " (unidades) y " + str(unidades_cajas) + " (unidades por caja) genera un resto de " + str(resto)
                 }
             }
     
     @api.onchange('x_cajas')
     def x_cajas_change(self):
-        self.x_unidades = self.x_cajas * self.x_producto.x_studio_unidades_por_caja
+        unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
+        self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
 
     @api.onchange('x_kg')
     def x_kg_change(self):
+        unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
         self.x_cajas = self.x_kg * 1000 / (self.x_producto.x_studio_peso_umb_gr if self.x_producto.x_studio_peso_umb_gr > 0 else 1)
-        self.x_unidades = self.x_cajas * self.x_producto.x_studio_unidades_por_caja
+        self.x_unidades = self.x_cajas * unidades_cajas
         resto = self.x_kg * 1000 % (self.x_producto.x_studio_peso_umb_gr if self.x_producto.x_studio_peso_umb_gr > 0 else 1)
         if(resto > 0):
             return {
@@ -82,9 +86,11 @@ class ForecastSales(models.Model):
             }
 
     def forecast_change_field_locked(self):
-
         if(datetime.date.today().day > 25):
-            test=""
+            forecast = self.env['x.forecast.sale'].search([('x_mes','<=',datetime.date.today()),('x_locked','!=',True)])
+            for record in forecast:
+                record.x_locked = True
+            
 
 class ForecastCatalog(models.Model):
 
