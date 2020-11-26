@@ -236,7 +236,7 @@ class mrp_production_schedule_custom_0(models.Model):
                             moq = (product_tmpl_id.seller_ids[0].x_studio_moq_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
                             unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
 
-                            if (moq % unidad_redondeo) > 0:
+                            if unidad_redondeo > 0 and (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
                                 moq = moq + resto
                             
@@ -252,9 +252,9 @@ class mrp_production_schedule_custom_0(models.Model):
 
                             peso_umb_gr = (product_tmpl_id.x_studio_unidades_caja_ud + product_tmpl_id.x_studio_n_bolsas) * product_tmpl_id.x_studio_peso_neto_unitario_gr
                             moq = product_tmpl_id.bom_ids[-1].x_studio_moq_kg * 1000 / (peso_umb_gr if peso_umb_gr > 0 else 1)
-                            unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
+                            unidad_redondeo = (product_tmpl_id.bom_ids[-1].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
                             
-                            if (moq % unidad_redondeo) > 0:
+                            if unidad_redondeo > 0 and (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
                                 moq = moq + resto
 
