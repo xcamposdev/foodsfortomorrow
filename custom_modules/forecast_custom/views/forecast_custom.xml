@@ -1,131 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <record id="action_forecast_sale" model="ir.actions.act_window">
-        <field name="name">Ventas</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">x.forecast.sale</field>
-        <field name="view_mode">tree,pivot</field>
-        <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
-        <field name="context">{'default_is_company': True}</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create a data of sales in your catalog
-          </p><p>
-            Odoo helps you to easily track all activities related to a customer.
-          </p>
-        </field>
-    </record>
+    <data noupdate="1">
+        <!-- definimos variables de entorno -->
+        <record id="x_day_of_month_to_close_forecast" model="ir.config_parameter">
+            <field name="key">x_day_of_month_to_close_forecast</field>
+            <field name="value">25</field>
+        </record>
+    </data>
 
-    <record id="view_forecast_sale_tree" model="ir.ui.view">
-        <field name="name">x.forecast.sale.tree</field>
-        <field name="model">x.forecast.sale</field>
-        <field eval="16" name="priority"/>
-        <field name="arch" type="xml">
-            <tree string="Ventas" editable="bottom" create="0">
-                <field name="x_mes_format" />
-                <field name="x_producto" />
-                <field name="x_rotacion" />
-                <field name="x_kg" attrs="{'readonly': [('x_locked','=', True)]}" />
-                <field name="x_cajas" attrs="{'readonly': [('x_locked','=', True)]}"/>
-                <field name="x_unidades" attrs="{'readonly': [('x_locked','=', True)]}"/>
-                <field name="x_tipo" />
-                <field name="x_contacto" />
-                <field name="x_cuenta_analitica" />
-                <field name="x_locked" optional="hide" />
-            </tree>
-        </field>
-    </record>
+    <data>
+        <record id="action_forecast_sale" model="ir.actions.act_window">
+            <field name="name">Ventas</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.forecast.sale</field>
+            <field name="view_mode">tree,pivot</field>
+            <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
+            <field name="context">{'default_is_company': True}</field>
+            <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a data of sales in your catalog
+            </p><p>
+                Odoo helps you to easily track all activities related to a customer.
+            </p>
+            </field>
+        </record>
 
-    <record id="action_forecast_sale_view_tree" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="forecast_custom.view_forecast_sale_tree"/>
-        <field name="act_window_id" ref="action_forecast_sale"/>
-    </record>
+        <record id="view_forecast_sale_tree" model="ir.ui.view">
+            <field name="name">x.forecast.sale.tree</field>
+            <field name="model">x.forecast.sale</field>
+            <field eval="16" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Ventas" editable="bottom" create="0">
+                    <field name="x_mes_format" />
+                    <field name="x_producto" />
+                    <field name="x_rotacion" />
+                    <field name="x_kg" attrs="{'readonly': [('x_locked','=', True)]}" />
+                    <field name="x_cajas" attrs="{'readonly': [('x_locked','=', True)]}"/>
+                    <field name="x_unidades" attrs="{'readonly': [('x_locked','=', True)]}"/>
+                    <field name="x_tipo" />
+                    <field name="x_contacto" />
+                    <field name="x_cuenta_analitica" />
+                    <field name="x_locked" groups="forecast_custom.group_forecast_forecastman_all_leads" optional="show" />
+                </tree>
+            </field>
+        </record>
 
-    
+        <record id="action_forecast_sale_view_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="forecast_custom.view_forecast_sale_tree"/>
+            <field name="act_window_id" ref="action_forecast_sale"/>
+        </record>
 
-
-    <record id="action_forecast_catalog" model="ir.actions.act_window">
-        <field name="name">Catalogo</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">x.forecast.catalog</field>
-        <field name="view_mode">tree</field>
-        <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
-        <field name="context">{'default_is_company': True}</field>
-        <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            Create data in your catalog
-          </p><p>
-            Odoo helps you to easily track all activities related to a customer.
-          </p>
-        </field>
-    </record>
-
-    <record id="view_forecast_catalog_tree" model="ir.ui.view">
-        <field name="name">x.forecast.catalog.tree</field>
-        <field name="model">x.forecast.catalog</field>
-        <field eval="8" name="priority"/>
-        <field name="arch" type="xml">
-            <tree string="Ventas" editable="bottom">
-                <field name="x_producto" />
-                <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
-                <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}"/>
-                <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
-                <field name="x_tipo"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="action_forecast_catalog_view_tree" model="ir.actions.act_window.view">
-        <field name="sequence" eval="1"/>
-        <field name="view_mode">tree</field>
-        <field name="view_id" ref="forecast_custom.view_forecast_catalog_tree"/>
-        <field name="act_window_id" ref="action_forecast_catalog"/>
-    </record>
+        
 
 
-    <menuitem id="menu_forecast"
-        name="Forecast"
-        web_icon="forecast_custom,static/description/icon.png"
-        sequence="4"/>
+        <record id="action_forecast_catalog" model="ir.actions.act_window">
+            <field name="name">Catalogo</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">x.forecast.catalog</field>
+            <field name="view_mode">tree</field>
+            <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
+            <field name="context">{'default_is_company': True}</field>
+            <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create data in your catalog
+            </p><p>
+                Odoo helps you to easily track all activities related to a customer.
+            </p>
+            </field>
+        </record>
 
-    <menuitem id="x_forecast_menu_sales"
-        name="Ventas"
-        action="action_forecast_sale"
-        parent="menu_forecast"
-        sequence="1"/>
+        <record id="view_forecast_catalog_tree" model="ir.ui.view">
+            <field name="name">x.forecast.catalog.tree</field>
+            <field name="model">x.forecast.catalog</field>
+            <field eval="8" name="priority"/>
+            <field name="arch" type="xml">
+                <tree string="Ventas" editable="bottom">
+                    <field name="x_producto" />
+                    <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
+                    <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}"/>
+                    <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
+                    <field name="x_tipo"/>
+                </tree>
+            </field>
+        </record>
 
-    <menuitem id="x_forecast_menu_catalog"
-        name="Catalogo"
-        action="action_forecast_catalog"
-        parent="menu_forecast"
-        sequence="2"/>
-
-    <menuitem id="x_forecast_menu_report"
-        name="Informes"
-        parent="menu_forecast"
-        sequence="3"/>
+        <record id="action_forecast_catalog_view_tree" model="ir.actions.act_window.view">
+            <field name="sequence" eval="1"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="forecast_custom.view_forecast_catalog_tree"/>
+            <field name="act_window_id" ref="action_forecast_catalog"/>
+        </record>
 
 
-    <!-- CRON JOB -->
-    <record id="forecast_custom_cronjob_change_locked" model="ir.cron">
-        <field name="name">Forecast Venta Cambiar a bloqueado</field>
-        <field name="model_id" ref="forecast_custom.model_x_forecast_sale"/>
-        <field name="user_id" ref="base.user_root" />
-        <field name="interval_number">1</field>     <!-- Número de veces que se llamará  -->
-        <field name="interval_type">days</field> <!-- minutes, hours, days, weeks, months -->
-        <field name="active" eval="True" />
-        <field name="numbercall">-1</field>         <!-- cuantas veces se ejecuta, -1 significa infinito -->
-        <field name="type">ir.actions.server</field>
-        <field name="state">code</field>
-        <field name="code">model.forecast_change_field_locked()</field>
-        <field name="doall">1</field>               <!-- booleano que indica si las ocurrencias perdidas deben ejecutarse cuando se reinicia el servidor. -->
-        <!-- <field name="nextcall" eval="datetime.date.today().strftime('%Y-%m-%d 00:00:00')"/> -->
-        <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
-        <!-- <field name="priority" eval="10" /> -->
-    </record>
-    <!-- END CRON JOB -->
+        <menuitem id="menu_forecast"
+            name="Forecast"
+            web_icon="forecast_custom,static/description/icon.png"
+            sequence="4" groups="forecast_custom.group_forecast_forecastman"/>
+
+        <menuitem id="x_forecast_menu_sales"
+            name="Ventas"
+            action="action_forecast_sale"
+            parent="menu_forecast"
+            sequence="1" groups="forecast_custom.group_forecast_forecastman"/>
+
+        <menuitem id="x_forecast_menu_catalog"
+            name="Catalogo"
+            action="action_forecast_catalog"
+            parent="menu_forecast"
+            sequence="2" groups="forecast_custom.group_forecast_forecastman"/>
+
+        <menuitem id="x_forecast_menu_report"
+            name="Informes"
+            parent="menu_forecast"
+            sequence="3" groups="forecast_custom.group_forecast_forecastman"/>
+
+
+        <!-- CRON JOB -->
+        <record id="forecast_custom_cronjob_change_locked" model="ir.cron">
+            <field name="name">Forecast Venta Cambiar a bloqueado</field>
+            <field name="model_id" ref="forecast_custom.model_x_forecast_sale"/>
+            <field name="user_id" ref="base.user_root" />
+            <field name="interval_number">1</field>     <!-- Número de veces que se llamará  -->
+            <field name="interval_type">days</field> <!-- minutes, hours, days, weeks, months -->
+            <field name="active" eval="True" />
+            <field name="numbercall">-1</field>         <!-- cuantas veces se ejecuta, -1 significa infinito -->
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="code">model.forecast_change_field_locked()</field>
+            <field name="doall">1</field>               <!-- booleano que indica si las ocurrencias perdidas deben ejecutarse cuando se reinicia el servidor. -->
+            <!-- <field name="nextcall" eval="datetime.date.today().strftime('%Y-%m-%d 00:00:00')"/> -->
+            <!--<field name="nextcall" >2016-12-31 23:59:59</field>-->
+            <!-- <field name="priority" eval="10" /> -->
+        </record>
+        <!-- END CRON JOB -->
+    </data>
 
 </odoo>

@@ -11,6 +11,7 @@
         Forecast custom funcionality
         """,
     'data': [
+        'security/forecast_security.xml',
         'security/ir.model.access.csv',
         'views/assets.xml',
         'views/forecast_custom.xml',

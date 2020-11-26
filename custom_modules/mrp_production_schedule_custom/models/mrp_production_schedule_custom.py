@@ -106,9 +106,10 @@ class mrp_production_schedule_custom_0(models.Model):
                         forecast_values['replenish_qty'] = 0
                     else:
                         replenish_qty = production_schedule._get_replenish_qty(starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values['indirect_demand_qty'])
-                        if (replenish_qty % unidad_redondeo) > 0:
+                        if unidad_redondeo > 0 and (replenish_qty % unidad_redondeo) > 0:
                             resto = unidad_redondeo - (replenish_qty % unidad_redondeo)
                             replenish_qty = replenish_qty + resto
+                        
                         replenish_qty = float_round(replenish_qty, precision_rounding=rounding)
                         if(replenish_qty > 0 and replenish_qty < moq):
                             forecast_values['replenish_qty'] = moq
