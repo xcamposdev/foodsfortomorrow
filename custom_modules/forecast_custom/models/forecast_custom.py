@@ -85,32 +85,32 @@ class ForecastSales(models.Model):
 
     def forecast_change_field_locked(self, product_id=False):
         day = int(self.env['ir.config_parameter'].sudo().get_param('x_day_of_month_to_close_forecast'))
-        day_now = datetime.date.today().day
-        if(day_now == day):
-            startMonth = datetime.datetime(datetime.date.today().year, datetime.date.today().month, 1)
-            startMonth = startMonth + relativedelta(months=1)
-            endMonth = startMonth + relativedelta(months=1)
-            forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',startMonth),('x_mes','<',endMonth)])
-            if(product_id):
-                forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',startMonth),('x_mes','<',endMonth),('x_producto','=',product_id)])
+        if(datetime.date.today().day == day):
+            start_month = datetime.datetime(datetime.date.today().year, datetime.date.today().month, 1)
+            start_month = start_month + relativedelta(months=1)
+            end_month = start_month + relativedelta(months=1)
+            month = start_month.month
             producto_caja = []
+
+            forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month)])
+            if(product_id):
+                forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_producto','=',product_id)])
+            
             for record in forecast:
-                record.write({
-                    'x_locked': True
-                })
-                exist = False
-                for pro_caj in producto_caja:
-                    if(pro_caj['product_id'] == record.x_producto.id):
-                        pro_caj['quantity'] = int(pro_caj['quantity']) + record.x_cajas
-                        exist = True
-                        break
-                if(exist == False):
+                record.write({ 'x_locked': True })
+                prod_caja = list(filter(lambda f:f['product_id'] == record.x_producto.id, producto_caja))
+                if(prod_caja):
+                    prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + record.x_cajas
+                else:
                     producto_caja.append({ 'product_id': record.x_producto.id, 'quantity': record.x_cajas })
             
             date_range = self.env.company._get_date_range()
             qty_week = 0
-            for date_start, date_stop in date_range:
-                if(date_start.month == startMonth.month):
+            for date_start, date_stop in date_range: 
+                # Una semana repartida en dos meses pertenece al mes en el que tiene más días
+                if (date_start.month != date_stop.month and date_stop.day > 3 and date_stop.month == month) or \
+                    (date_start.month == date_stop.month and date_start.month == month) or \
+                    (date_start.month != date_stop.month and date_stop.day <= 4 and date_start.month == month):
                     qty_week = qty_week + 1
             
             for pro_caj in producto_caja:
@@ -118,12 +118,15 @@ class ForecastSales(models.Model):
                 mrp_production_schedule = self.env['mrp.production.schedule'].search([('product_id','=',int(pro_caj['product_id']))])
                 if(quantity > 0 and mrp_production_schedule):
                     for date_start, date_stop in date_range:
-                        if(date_start.month == startMonth.month):
+                        if (date_start.month != date_stop.month and date_stop.day > 3 and date_stop.month == month) or \
+                            (date_start.month == date_stop.month and date_start.month == month) or \
+                            (date_start.month != date_stop.month and date_stop.day <= 4 and date_start.month == month):
+
                             existing_forecast = mrp_production_schedule.forecast_ids.filtered(lambda f:f.date >= date_start and f.date <= date_stop)
                             quantity = float_round(float(quantity), precision_rounding=mrp_production_schedule.product_uom_id.rounding)
-                            quantity_to_add = quantity - sum(existing_forecast.mapped('forecast_qty'))
+                            quantity_to_add = quantity # - sum(existing_forecast.mapped('forecast_qty'))
                             if existing_forecast:
-                                new_qty = existing_forecast[0].forecast_qty + quantity_to_add
+                                new_qty = quantity_to_add #existing_forecast[0].forecast_qty + quantity_to_add
                                 new_qty = float_round(new_qty, precision_rounding=mrp_production_schedule.product_uom_id.rounding)
                                 existing_forecast[0].write({'forecast_qty': new_qty})
                             else:
@@ -155,8 +158,3 @@ class ForecastCatalog(models.Model):
         ], string="Tipo", required=True)
 
     x_forecast_sales = fields.One2many('x.forecast.sale', 'x_forecast_catalog_id', copy=True, auto_join=True)
-    # x_order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
-    
-
-    # order_id = fields.Many2one('sale.order', string='Order Reference', required=True, ondelete='cascade', index=True, copy=False)
-    # order_line = fields.One2many('sale.order.line', 'order_id', string='Order Lines', states={'cancel': [('readonly', True)], 'done': [('readonly', True)]}, copy=True, auto_join=True)
