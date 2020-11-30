@@ -34,6 +34,7 @@
                 <tree string="Ventas" editable="bottom" create="0">
                     <field name="x_mes_format" />
                     <field name="x_producto" />
+                    <field name="x_comercial" groups="forecast_custom.group_forecast_forecastman_all_leads" optional="show" />
                     <field name="x_rotacion" />
                     <field name="x_kg" attrs="{'readonly': [('x_locked','=', True)]}" />
                     <field name="x_cajas" attrs="{'readonly': [('x_locked','=', True)]}"/>
