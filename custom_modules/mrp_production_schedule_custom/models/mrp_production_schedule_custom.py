@@ -106,9 +106,10 @@ class mrp_production_schedule_custom_0(models.Model):
                         forecast_values['replenish_qty'] = 0
                     else:
                         replenish_qty = production_schedule._get_replenish_qty(starting_inventory_qty - forecast_values['forecast_qty'] - forecast_values['indirect_demand_qty'])
-                        if (replenish_qty % unidad_redondeo) > 0:
+                        if unidad_redondeo > 0 and (replenish_qty % unidad_redondeo) > 0:
                             resto = unidad_redondeo - (replenish_qty % unidad_redondeo)
                             replenish_qty = replenish_qty + resto
+                        
                         replenish_qty = float_round(replenish_qty, precision_rounding=rounding)
                         if(replenish_qty > 0 and replenish_qty < moq):
                             forecast_values['replenish_qty'] = moq
@@ -236,7 +237,7 @@ class mrp_production_schedule_custom_0(models.Model):
                             moq = (product_tmpl_id.seller_ids[0].x_studio_moq_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
                             unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
 
-                            if (moq % unidad_redondeo) > 0:
+                            if unidad_redondeo > 0 and (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
                                 moq = moq + resto
                             
@@ -245,16 +246,16 @@ class mrp_production_schedule_custom_0(models.Model):
                             break
 
                     if(route.name == "Fabricar"):
-                        toReturn['route'] = "Comprar"
+                        toReturn['route'] = "Fabricar"
                         if(product_tmpl_id.bom_ids):
                             time_days = product_tmpl_id.bom_ids[-1].x_studio_lead_time
                             toReturn['quantity_week'] = math.ceil(time_days/7)
 
                             peso_umb_gr = (product_tmpl_id.x_studio_unidades_caja_ud + product_tmpl_id.x_studio_n_bolsas) * product_tmpl_id.x_studio_peso_neto_unitario_gr
                             moq = product_tmpl_id.bom_ids[-1].x_studio_moq_kg * 1000 / (peso_umb_gr if peso_umb_gr > 0 else 1)
-                            unidad_redondeo = (product_tmpl_id.seller_ids[0].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
+                            unidad_redondeo = (product_tmpl_id.bom_ids[-1].x_studio_unidad_de_redondeo_kg * 1000) / (peso_umb_gr if peso_umb_gr > 0 else 1)
                             
-                            if (moq % unidad_redondeo) > 0:
+                            if unidad_redondeo > 0 and (moq % unidad_redondeo) > 0:
                                 resto = unidad_redondeo - (moq % unidad_redondeo)
                                 moq = moq + resto
 
@@ -269,42 +270,49 @@ class mrp_production_schedule_custom_0(models.Model):
         result = super(mrp_production_schedule_custom_0, self).create(vals)
         company_id = self.env.company
         date_range = company_id._get_date_range()
-        forecast_month = []
 
         data = []
         for date_start, date_stop in date_range:
-            if(date_start.month not in forecast_month):
-                start_month = datetime.datetime(date_start.year, date_start.month, 1)
-                end_month = start_month + relativedelta(months=1)
-                forecast = self.env['x.forecast.sale'].search([
-                    ('x_producto','=',result.product_id.id),
-                    ('x_mes','>=',start_month),
-                    ('x_mes','<',end_month),
-                    ('x_locked','=',True)
-                    ])
-                forecast_unit = 0
-                for fore in forecast:
-                    forecast_unit += fore.x_cajas
-                data.append({
-                    'start_month':start_month,
-                    'end_month':end_month,
-                    'forecast':forecast_unit,
-                    'qty_week': 1
-                })
-                forecast_month.append(date_start.month)
-            else:
-                for i in data:
-                    if(i['start_month'].month == date_start.month):
-                        i['qty_week'] = i['qty_week'] + 1
+            month = date_start.month
+            qty = 0
+            if (date_start.month != date_stop.month and date_stop.day <= 3 and date_start.month == month) or \
+                (date_start.month == date_stop.month and date_start.month == month):
+                qty = 1
+            elif (date_start.month != date_stop.month and date_stop.day > 3 and date_start.month == month):
+                month = 1 if (month == 12) else month + 1
+                qty = 1
+
+            if(qty == 1):
+                data_find = list(_data for _data in data if _data['month'] == month)
+                if(data_find):
+                    data_find[0]['qty_week'] = int(data_find[0]['qty_week']) + 1
+                else:
+
+                    start_month = datetime.datetime(date_start.year, date_start.month, 1)
+                    end_month = start_month + relativedelta(months=1)
+                    forecast = self.env['x.forecast.sale'].search([
+                        ('x_producto','=',result.product_id.id),
+                        ('x_mes','>=',start_month),
+                        ('x_mes','<',end_month),
+                        ('x_locked','=',True)
+                        ])
+                    forecast_unit = 0
+                    for fore in forecast:
+                        forecast_unit += fore.x_cajas
+
+                    data.append({ 'month': month, 'qty_week': 1, 'forecast': forecast_unit })
 
         for date_start, date_stop in date_range:
             existing_forecast = self.forecast_ids.filtered(lambda f:f.date >= date_start and f.date <= date_stop)
             
-            quantity = 0
-            for i in data:
-                if(i['start_month'].month == date_start.month):
-                    quantity = i['forecast'] / i['qty_week']
-                    quantity = float_round(float(quantity), precision_rounding=result.product_uom_id.rounding)
+            month = date_start.month
+            if(date_start.month != date_stop.month and date_stop.day > 3):
+                month = month + 1
+
+            data_find = list(_data for _data in data if _data['month'] == month)
+            quantity = data_find[0]['forecast'] / data_find[0]['qty_week']
+
+            quantity = float_round(float(quantity), precision_rounding=result.product_uom_id.rounding)
             
             existing_forecast.create({
                 'forecast_qty': quantity,

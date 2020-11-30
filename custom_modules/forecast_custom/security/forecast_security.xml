@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="base.module_category_forecast" model="ir.module.category">
+        <field name="description">Le ayuda a gestionar sus predicciones forecast.</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="group_forecast_forecastman" model="res.groups">
+        <field name="name">Usuario: Solo documentos propios</field>
+        <field name="category_id" ref="base.module_category_forecast"/>
+        <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="comment">el usuario tendrá acceso a sus propios datos en la aplicación de forecast.</field>
+    </record>
+
+    <record id="group_forecast_forecastman_all_leads" model="res.groups">
+        <field name="name">Usuario: Todos los documentos</field>
+        <field name="category_id" ref="base.module_category_forecast"/>
+        <field name="implied_ids" eval="[(4, ref('group_forecast_forecastman'))]"/>
+        <field name="comment">el usuario tendrá acceso a todos los registros de todos en la aplicación de forecast.</field>
+    </record>
+
+
+    <record id="forecast_sale_personal_rule" model="ir.rule">
+        <field name="name">Personal Forecast sale</field>
+        <field ref="model_x_forecast_sale" name="model_id"/>
+        <field name="domain_force">[('x_comercial','=',user.id)]</field>
+        <field name="groups" eval="[(4, ref('forecast_custom.group_forecast_forecastman'))]"/>
+    </record>
+    <record id="forecast_sale_see_all" model="ir.rule">
+        <field name="name">All Forecast sale</field>
+        <field ref="model_x_forecast_sale" name="model_id"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4, ref('forecast_custom.group_forecast_forecastman_all_leads'))]"/>
+    </record>
+
+    <record id="forecast_catalog_personal_rule" model="ir.rule">
+        <field name="name">Personal Forecast catalog</field>
+        <field ref="model_x_forecast_catalog" name="model_id"/>
+        <field name="domain_force">[('x_comercial','=',user.id)]</field>
+        <field name="groups" eval="[(4, ref('forecast_custom.group_forecast_forecastman'))]"/>
+    </record>
+    <record id="forecast_catalog_see_all" model="ir.rule">
+        <field name="name">All Forecast catalog</field>
+        <field ref="model_x_forecast_catalog" name="model_id"/>
+        <field name="domain_force">[(1,'=',1)]</field>
+        <field name="groups" eval="[(4, ref('forecast_custom.group_forecast_forecastman_all_leads'))]"/>
+    </record>
+
+</odoo>
