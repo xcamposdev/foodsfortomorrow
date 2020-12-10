@@ -22,11 +22,19 @@ class forecast_wizard_custom_0(models.TransientModel):
         startMonth = datetime.datetime(self.date_generate.year, self.date_generate.month, 1)
         endMonth = startMonth + relativedelta(months=1)
         
-        exists = self.env['x.forecast.sale'].search(['&','&',('x_comercial','=',self.env.user.id),('x_mes','>=',startMonth),('x_mes','<',endMonth)], limit=1)
-        if(exists):
-            raise ValidationError("Ya existe registros generados para el mes: %s" % (startMonth.strftime('%m/%Y')))
-
         data_catalogo = self.env['x.forecast.catalog'].search([('x_comercial','=',self.env.user.id)])
+        catalog_ids = list(x.id for x in data_catalogo)
+        data_sale = self.env['x.forecast.sale'].search(['&','&',('x_comercial','=',self.env.user.id),('x_mes','>=',startMonth),('x_mes','<',endMonth)])
+        sale_ids = list(x.x_forecast_catalog_id.id for x in data_sale)
+
+        for element in sale_ids:
+            if element in catalog_ids:
+                catalog_ids.remove(element)
+
+        if(len(catalog_ids) == 0):
+            raise ValidationError("Ya existen registros generados para el mes: %s" % (startMonth.strftime('%m/%Y')))
+
+        data_catalogo = self.env['x.forecast.catalog'].search([('x_comercial','=',self.env.user.id),('id','in',catalog_ids)])
         if(data_catalogo):
             for catalogo in data_catalogo:
                 date_format = (str(self.date_generate.month) if len(str(self.date_generate.month))==2 else "0" + str(self.date_generate.month)) + "/" + str(self.date_generate.year)
@@ -73,7 +81,8 @@ class forecast_wizard_custom_0(models.TransientModel):
                     ('order_id.partner_invoice_id','=',catalog.x_contacto.id),\
                     ('order_id.date_order','>=',start_date),('order_id.date_order','<',end_date)])
             for line in quantity_record:
-                quantity_sale = quantity_sale + (line.product_uom_qty * (catalog.x_producto.x_studio_unidades_por_caja if catalog.x_producto.x_studio_unidades_por_caja > 0 else 1))
+                unidades_caja = catalog.x_producto.x_studio_unidades_caja_ud + catalog.x_producto.x_studio_n_bolsas
+                quantity_sale = quantity_sale + (line.product_uom_qty * (unidades_caja if unidades_caja > 0 else 1))
             return quantity_sale / (days_previous_month - number_of_sundays) / (catalog.x_contacto.x_studio_puntos_de_venta_foods if catalog.x_contacto.x_studio_puntos_de_venta_foods > 0 else 1)
             
         elif(catalog.x_cuenta_analitica):
@@ -82,7 +91,8 @@ class forecast_wizard_custom_0(models.TransientModel):
                     ('order_id.analytic_account_id','=',catalog.x_cuenta_analitica.id),\
                     ('order_id.date_order','>=',start_date),('order_id.date_order','<',end_date)])
             for line in quantity_record:
-                quantity_sale = quantity_sale + (line.product_uom_qty * (catalog.x_producto.x_studio_unidades_por_caja if catalog.x_producto.x_studio_unidades_por_caja > 0 else 1))
+                unidades_caja = catalog.x_producto.x_studio_unidades_caja_ud + catalog.x_producto.x_studio_n_bolsas
+                quantity_sale = quantity_sale + (line.product_uom_qty * (unidades_caja if unidades_caja > 0 else 1))
             return quantity_sale / (days_previous_month - number_of_sundays)
             
         else:
