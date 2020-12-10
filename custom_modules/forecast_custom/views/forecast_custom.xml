@@ -10,6 +10,18 @@
     </data>
 
     <data>
+
+        <record id="view_forecast_sale_filter" model="ir.ui.view">
+            <field name="name">forecast.sale.list.select</field>
+            <field name="model">x.forecast.sale</field>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <search string="Search sale Forecast">
+                    <filter name="filter_my_data" string="Mi Comercial" domain="[('x_comercial.id','=',uid)]"/>
+               </search>
+            </field>
+        </record>
+
         <record id="action_forecast_sale" model="ir.actions.act_window">
             <field name="name">Ventas</field>
             <field name="type">ir.actions.act_window</field>
@@ -17,6 +29,7 @@
             <field name="view_mode">tree,pivot</field>
             <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
             <field name="context">{'default_is_company': True}</field>
+            <field name="search_view_id" ref="view_forecast_sale_filter"/>
             <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a data of sales in your catalog
@@ -34,6 +47,7 @@
                 <tree string="Ventas" editable="bottom" create="0">
                     <field name="x_mes_format" />
                     <field name="x_producto" />
+                    <field name="x_producto_pais" />
                     <field name="x_comercial" groups="forecast_custom.group_forecast_forecastman_all_leads" optional="show" />
                     <field name="x_rotacion" />
                     <field name="x_kg" attrs="{'readonly': [('x_locked','=', True)]}" />
@@ -56,6 +70,16 @@
 
         
 
+        <record id="view_forecast_catalog_filter" model="ir.ui.view">
+            <field name="name">forecast.catalog.list.select</field>
+            <field name="model">x.forecast.catalog</field>
+            <field name="priority" eval="15"/>
+            <field name="arch" type="xml">
+                <search string="Search catalog Forecast">
+                    <filter name="filter_my_data" string="Mi Comercial" domain="[('x_comercial.id','=',uid)]"/>
+               </search>
+            </field>
+        </record>
 
         <record id="action_forecast_catalog" model="ir.actions.act_window">
             <field name="name">Catalogo</field>
@@ -64,6 +88,7 @@
             <field name="view_mode">tree</field>
             <!-- <field name="search_view_id" ref="base.view_res_partner_filter"/> -->
             <field name="context">{'default_is_company': True}</field>
+            <field name="search_view_id" ref="view_forecast_catalog_filter"/>
             <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create data in your catalog
@@ -80,6 +105,7 @@
             <field name="arch" type="xml">
                 <tree string="Ventas" editable="bottom">
                     <field name="x_producto" />
+                    <field name="x_producto_pais" />
                     <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}"/>
                     <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
