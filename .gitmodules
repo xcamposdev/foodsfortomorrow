@@ -48,3 +48,4 @@
 [submodule "impulsodiagonal/heura_addons"]
 	path = impulsodiagonal/heura_addons
 	url = git@github.com:impulsodiagonal/heura_addons.git
+	branch = 13.0
