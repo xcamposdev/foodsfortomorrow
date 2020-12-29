@@ -101,7 +101,7 @@ class ForecastSales(models.Model):
         month = start_month.month
         producto_caja = []
 
-        forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_locked','=','False')])
+        forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_locked','=',False)])
         if(product_id):
             forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_locked','=',True),('x_producto','=',product_id)])
         
