@@ -49,3 +49,11 @@
 	path = impulsodiagonal/heura_addons
 	url = git@github.com:impulsodiagonal/heura_addons.git
 	branch = 13.0
+[submodule "OCA/reporting-engine"]
+	path = OCA/reporting-engine
+	url = git@github.com:oca/reporting-engine.git
+	branch = 13.0
+[submodule "OCA/mis-builder"]
+	path = OCA/mis-builder
+	url = git@github.com:oca/mis-builder.git
+	branch = 13.0
