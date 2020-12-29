@@ -94,7 +94,7 @@ class ForecastSales(models.Model):
         if(datetime.date.today().day == day):
             self.process_forecast(datetime.date.today())
 
-    def process_forecast(self, date_process, product_id):            
+    def process_forecast(self, date_process, product_id=False):            
         start_month = datetime.datetime(date_process.year, date_process.month, 1)
         start_month = start_month + relativedelta(months=1)
         end_month = start_month + relativedelta(months=1)
