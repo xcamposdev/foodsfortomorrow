@@ -169,9 +169,11 @@ class mrp_production_schedule_custom_0(models.Model):
             f.date >= date_start and f.date <= date_stop)
 
         ######################################
-        if(existing_forecast):
+        if existing_forecast:
             data = self.moq_of_product(existing_forecast.production_schedule_id.product_tmpl_id)
-            if(date_index >= data['quantity_week'] and quantity > 0 and quantity < data['moq']):
+            if float(quantity) > float(self.max_to_replenish_qty):
+                quantity = self.max_to_replenish_qty
+            elif (date_index >= data['quantity_week'] and float(quantity) > 0 and float(quantity) < float(data['moq'])):
                 quantity = data['moq']
         ######################################
 

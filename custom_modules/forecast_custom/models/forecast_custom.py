@@ -93,6 +93,8 @@ class ForecastSales(models.Model):
         day = int(self.env['ir.config_parameter'].sudo().get_param('x_day_of_month_to_close_forecast'))
         if(datetime.date.today().day == day):
             self.process_forecast(datetime.date.today())
+            self.process_forecast(datetime.date.today() + relativedelta(months=1))
+            self.process_forecast(datetime.date.today() + relativedelta(months=2))
 
     def process_forecast(self, date_process, product_id=False):            
         start_month = datetime.datetime(date_process.year, date_process.month, 1)
@@ -146,6 +148,7 @@ class ForecastSales(models.Model):
                                 'replenish_qty': 0,
                                 'production_schedule_id': mrp_production_schedule.id
                             })
+
 
 class ForecastCatalog(models.Model):
 
