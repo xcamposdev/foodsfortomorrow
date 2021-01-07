@@ -3,10 +3,13 @@
 import logging
 import calendar
 import datetime
+import math
 from dateutil.relativedelta import relativedelta
 from odoo import api, fields, models, exceptions, _
 from odoo.exceptions import AccessError, UserError, ValidationError
 from odoo.tools.float_utils import float_round
+from odoo.tools.date_utils import start_of, end_of, add
+from odoo.tools.misc import format_date
 
 _logger = logging.getLogger(__name__)
 
@@ -62,7 +65,7 @@ class ForecastSales(models.Model):
                 }
             }
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_cajas')
     def x_cajas_change(self):
@@ -70,7 +73,7 @@ class ForecastSales(models.Model):
         self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_kg')
     def x_kg_change(self):
@@ -86,7 +89,7 @@ class ForecastSales(models.Model):
                 }
             }
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
     
     def write(self, vals):
         res = super(ForecastSales, self).write(vals)
@@ -120,14 +123,14 @@ class ForecastSales(models.Model):
         for record in forecast:
             prod_caja = list(filter(lambda f:f['product_id'] == record.x_producto.id, producto_caja))
             cajas_val = record.x_cajas
-            if record.id == forecast_id:
+            if record.id == forecast_id[0]:
                 cajas_val = cajas
             if(prod_caja):
                 prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + cajas_val
             else:
                 producto_caja.append({ 'product_id': record.x_producto.id, 'quantity': cajas_val })
         
-        date_range = self.env.company._get_date_range()
+        date_range = self._get_date_range()
         qty_week = 0
         for date_start, date_stop in date_range: 
             # Una semana repartida en dos meses pertenece al mes en el que tiene más días
@@ -160,6 +163,23 @@ class ForecastSales(models.Model):
                                 'production_schedule_id': mrp_production_schedule.id
                             })
 
+    
+    def _get_date_range(self):
+        self.ensure_one()
+        date_range = []
+        first_day = start_of(fields.Date.today(), self.env.company.manufacturing_period)
+        manufacturing_period = self.env.company.manufacturing_period_to_display
+        week = (first_day.day // 7) + 1
+        
+        for i in range(week):
+            first_day = first_day + relativedelta(days=-7)
+            manufacturing_period = manufacturing_period + 1
+
+        for columns in range(manufacturing_period):
+            last_day = end_of(first_day, self.env.company.manufacturing_period)
+            date_range.append((first_day, last_day))
+            first_day = add(last_day, days=1)
+        return date_range
 
 class ForecastCatalog(models.Model):
 
