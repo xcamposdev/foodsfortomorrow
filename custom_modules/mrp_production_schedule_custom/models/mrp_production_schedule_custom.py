@@ -295,8 +295,7 @@ class mrp_production_schedule_custom_0(models.Model):
                     forecast = self.env['x.forecast.sale'].search([
                         ('x_producto','=',result.product_id.id),
                         ('x_mes','>=',start_month),
-                        ('x_mes','<',end_month),
-                        ('x_locked','=',True)
+                        ('x_mes','<',end_month)
                         ])
                     forecast_unit = 0
                     for fore in forecast:

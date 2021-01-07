@@ -61,13 +61,17 @@ class ForecastSales(models.Model):
                     'message': "La división entre " + str(self.x_unidades) + " (unidades) y " + str(unidades_cajas) + " (unidades por caja) genera un resto de " + str(resto)
                 }
             }
-    
+        
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
+
     @api.onchange('x_cajas')
     def x_cajas_change(self):
         unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
         self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
+
     @api.onchange('x_kg')
     def x_kg_change(self):
         unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
@@ -81,6 +85,8 @@ class ForecastSales(models.Model):
                     'message': "La división entre " + str(self.x_kg * 1000) + " (gramos) y " + str(self.x_producto.x_studio_peso_umb_gr) + " (peso neto UMB gr) genera un resto de " + str(resto)
                 }
             }
+        
+        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.id, self.x_cajas)
     
     def write(self, vals):
         res = super(ForecastSales, self).write(vals)
@@ -96,25 +102,30 @@ class ForecastSales(models.Model):
             self.process_forecast(datetime.date.today() + relativedelta(months=1))
             self.process_forecast(datetime.date.today() + relativedelta(months=2))
 
-    def process_forecast(self, date_process, product_id=False):            
+    def process_forecast(self, date_process, product_id=False, forecast_id=False, cajas=False):
         start_month = datetime.datetime(date_process.year, date_process.month, 1)
         start_month = start_month + relativedelta(months=1)
         end_month = start_month + relativedelta(months=1)
         month = start_month.month
         producto_caja = []
 
-        forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_locked','=',False)])
-        if(product_id):
-            forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_locked','=',True),('x_producto','=',product_id)])
+        #bloquear
+        if product_id:
+            forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month),('x_producto','=',product_id)])
+        else:
+            forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month)])
+            for record in forecast:
+                record.write({ 'x_locked': True })
         
         for record in forecast:
-            if not product_id:
-                record.write({ 'x_locked': True })
             prod_caja = list(filter(lambda f:f['product_id'] == record.x_producto.id, producto_caja))
+            cajas_val = record.x_cajas
+            if record.id == forecast_id:
+                cajas_val = cajas
             if(prod_caja):
-                prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + record.x_cajas
+                prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + cajas_val
             else:
-                producto_caja.append({ 'product_id': record.x_producto.id, 'quantity': record.x_cajas })
+                producto_caja.append({ 'product_id': record.x_producto.id, 'quantity': cajas_val })
         
         date_range = self.env.company._get_date_range()
         qty_week = 0
