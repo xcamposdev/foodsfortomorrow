@@ -65,7 +65,7 @@ class ForecastSales(models.Model):
                 }
             }
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
+        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_cajas')
     def x_cajas_change(self):
@@ -73,7 +73,7 @@ class ForecastSales(models.Model):
         self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
+        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_kg')
     def x_kg_change(self):
@@ -89,11 +89,11 @@ class ForecastSales(models.Model):
                 }
             }
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
+        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
     
-    def write(self, vals):
+    def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)
-        if vals.get('x_locked', False):
+        if is_cron == False and (vals.get('x_locked', False) or vals.get('x_cajas', False)):
             month = self.x_mes + relativedelta(months=-1)
             self.process_forecast(month, self.x_producto.id)
         return res
@@ -118,13 +118,14 @@ class ForecastSales(models.Model):
         else:
             forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month)])
             for record in forecast:
-                record.write({ 'x_locked': True })
+                record.write({ 'x_locked': True }, True)
         
         for record in forecast:
             prod_caja = list(filter(lambda f:f['product_id'] == record.x_producto.id, producto_caja))
             cajas_val = record.x_cajas
-            if record.id == forecast_id[0]:
-                cajas_val = cajas
+            if forecast_id:
+                if record.id == forecast_id[0]:
+                    cajas_val = cajas
             if(prod_caja):
                 prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + cajas_val
             else:
@@ -165,7 +166,6 @@ class ForecastSales(models.Model):
 
     
     def _get_date_range(self):
-        self.ensure_one()
         date_range = []
         first_day = start_of(fields.Date.today(), self.env.company.manufacturing_period)
         manufacturing_period = self.env.company.manufacturing_period_to_display
