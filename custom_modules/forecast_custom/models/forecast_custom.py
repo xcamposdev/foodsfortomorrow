@@ -64,8 +64,6 @@ class ForecastSales(models.Model):
                     'message': "La división entre " + str(self.x_unidades) + " (unidades) y " + str(unidades_cajas) + " (unidades por caja) genera un resto de " + str(resto)
                 }
             }
-        
-        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_cajas')
     def x_cajas_change(self):
@@ -73,8 +71,6 @@ class ForecastSales(models.Model):
         self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
-
     @api.onchange('x_kg')
     def x_kg_change(self):
         unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
@@ -89,13 +85,12 @@ class ForecastSales(models.Model):
                 }
             }
         
-        #self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
-    
     def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)
         if is_cron == False and (vals.get('x_locked', False) or vals.get('x_cajas', False)):
-            month = self.x_mes + relativedelta(months=-1)
-            self.process_forecast(month, self.x_producto.id)
+            for record in self:
+                month = record.x_mes + relativedelta(months=-1)
+                self.process_forecast(month, record.x_producto.id)
         return res
 
     def forecast_change_field_locked(self, product_id=False, date=False):
@@ -180,6 +175,17 @@ class ForecastSales(models.Model):
             date_range.append((first_day, last_day))
             first_day = add(last_day, days=1)
         return date_range
+
+    def block_forecast_selected(self, records):
+        records.write({
+            'x_locked': True
+        })
+
+    def unblock_forecast_selected(self, records):
+        records.write({
+            'x_locked': False
+        })
+
 
 class ForecastCatalog(models.Model):
 
