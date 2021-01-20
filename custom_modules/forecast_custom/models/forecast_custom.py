@@ -179,7 +179,13 @@ class ForecastSales(models.Model):
     def block_forecast_selected(self, records):
         records.write({
             'x_locked': True
-        }) 
+        })
+
+    def unblock_forecast_selected(self, records):
+        records.write({
+            'x_locked': False
+        })
+
 
 class ForecastCatalog(models.Model):
 
