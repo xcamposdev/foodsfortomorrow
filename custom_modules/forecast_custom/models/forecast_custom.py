@@ -44,7 +44,7 @@ class ForecastSales(models.Model):
             record.x_producto_pais = record.x_producto.x_studio_familia
 
     def onchange(self, values, field_name, field_onchange):
-        # OVERRIDE
+        # OVERRIDE 
         # As the dynamic lines in this model are quite complex, we need to ensure some computations are done exactly
         # at the beginning / at the end of the onchange mechanism. So, the onchange recursivity is disabled.
         return super(ForecastSales, self.with_context(recursive_onchanges=False)).onchange(values, field_name, field_onchange)
