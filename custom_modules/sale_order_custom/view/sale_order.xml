@@ -15,7 +15,7 @@
         <record id="sale_order_form_customization_required" model="ir.ui.view">
             <field name="name">sale.order.form.customization_required</field>
             <field name="model">sale.order</field>
-            <field name="inherit_id" ref="studio_customization.odoo_studio_sale_ord_f0eddf5b-8385-438d-beb8-223c4b02501b"/>
+            <field name="inherit_id" ref="studio_customization.odoo_studio_sale_ord_2f4c5d1b-1f1b-4f93-8bf2-a306818b8408"/>
             <field name="arch" type="xml">
                 <field name="x_studio_fecha_recogida" position="attributes">
                     <attribute name="required">True</attribute>
