@@ -1,65 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
-        <!-- <record id="inherit_saleorder_respartner_id" model="ir.ui.view">
-            <field name="name">sale.order.form.filter_partner</field>
+        <record id="sale_view_order_form_fields_required" model="ir.ui.view">
+            <field name="name">sale.order.form.fields_required</field>
             <field name="model">sale.order</field>
             <field name="inherit_id" ref="sale.view_order_form"/>
             <field name="arch" type="xml">
-                <field name="partner_invoice_id" position="replace"/>
-                <field name ="partner_id" position="after">
-                    <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address" options='{"always_reload": True}' />
+                <field name="client_order_ref" position="attributes">
+                    <attribute name="required">True</attribute>
                 </field>
             </field>
-        </record> -->
-
-        <!-- <record id="view_order_form_filter_partner" model="ir.ui.view">
-            <field name="name">sale.order.form.filter_partner</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="arch" type="xml">
-                <field name="partner_invoice_id" position="replace"/>
-                <field name ="partner_id" position="after">
-                    <field name="partner_invoice_id" groups="sale.group_delivery_invoice_address" domain="[('parent_id','=','partner_id'),('type','=','invoice')]" />
-                </field>
-               
-            </field>
-        </record> -->
-        <!-- <record id="inherit_respatner_hola_id" model="ir.ui.view">
         </record>
-            <form string="generation fichier">
-                <group>
-                    <field name="message" />
-                </group>
-            </form>     -->
-        <!-- <record id="inherit_saleorder_respartner_id" model="ir.ui.view" >
-            <field name="name">inherit_saleorder_respartner_id</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_order_form"/>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='partner_id']" position="replace">
-                
-                    <field name="partner_id" widget="res_partner_many2one" 
-                    context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" 
-                    options="{'always_reload': True}" on_change="1" can_create="true" can_write="true" 
-                    modifiers="{'readonly':[['state','not in',['draft','sent']]],'required':true}"/>
-                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options="{&quot;always_reload&quot;: True}"/>
-                    <field name="partner_id" widget="res_partner_many2one" context="{'res_partner_search_mode': 'customer', 'show_address': 1, 'show_vat': True}" options='{"always_reload": True}'/>
-                </xpath> 
-            </field>
-        </record> -->
 
-        <!-- <record id="inherit_respatner_hola_id" model="ir.ui.view">
-            <field name="name">res.partner.inherit</field>
-            <field name="model">res.partner</field>
-            <field name="type">form</field>
-            <field name="inherit_id" ref="base.view_partner_form" />
-            <field name="arch" type="xml" >
-                <field name="user_id" position="after">
-                    <field name="hola" string="TEST HOLA:" />
+        <record id="sale_order_form_customization_required" model="ir.ui.view">
+            <field name="name">sale.order.form.customization_required</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="studio_customization.odoo_studio_sale_ord_f0eddf5b-8385-438d-beb8-223c4b02501b"/>
+            <field name="arch" type="xml">
+                <field name="x_studio_fecha_recogida" position="attributes">
+                    <attribute name="required">True</attribute>
                 </field>
             </field>
-        </record> -->
+        </record>
+
     </data>
 </odoo>

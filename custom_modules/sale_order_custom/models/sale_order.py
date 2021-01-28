@@ -182,4 +182,3 @@ class SaleOrderCustom0(models.Model):
                 subtype_id=self.env.ref('mail.mt_note').id
             )
         return moves
-
