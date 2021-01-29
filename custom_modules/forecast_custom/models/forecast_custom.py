@@ -44,7 +44,7 @@ class ForecastSales(models.Model):
             record.x_producto_pais = record.x_producto.x_studio_familia
 
     def onchange(self, values, field_name, field_onchange):
-        # OVERRIDE
+        # OVERRIDE 
         # As the dynamic lines in this model are quite complex, we need to ensure some computations are done exactly
         # at the beginning / at the end of the onchange mechanism. So, the onchange recursivity is disabled.
         return super(ForecastSales, self.with_context(recursive_onchanges=False)).onchange(values, field_name, field_onchange)
@@ -64,8 +64,6 @@ class ForecastSales(models.Model):
                     'message': "La división entre " + str(self.x_unidades) + " (unidades) y " + str(unidades_cajas) + " (unidades por caja) genera un resto de " + str(resto)
                 }
             }
-        
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
 
     @api.onchange('x_cajas')
     def x_cajas_change(self):
@@ -73,8 +71,6 @@ class ForecastSales(models.Model):
         self.x_unidades = self.x_cajas * unidades_cajas
         self.x_kg = self.x_cajas * self.x_producto.x_studio_peso_umb_gr / 1000
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
-
     @api.onchange('x_kg')
     def x_kg_change(self):
         unidades_cajas = self.x_producto.x_studio_unidades_caja_ud + self.x_producto.x_studio_n_bolsas
@@ -89,13 +85,12 @@ class ForecastSales(models.Model):
                 }
             }
         
-        self.process_forecast(self.x_mes + relativedelta(months=-1), self.x_producto.id, self.ids, self.x_cajas)
-    
-    def write(self, vals):
+    def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)
-        if vals.get('x_locked', False):
-            month = self.x_mes + relativedelta(months=-1)
-            self.process_forecast(month, self.x_producto.id)
+        if is_cron == False and (vals.get('x_locked', False) or vals.get('x_cajas', False)):
+            for record in self:
+                month = record.x_mes + relativedelta(months=-1)
+                self.process_forecast(month, record.x_producto.id)
         return res
 
     def forecast_change_field_locked(self, product_id=False, date=False):
@@ -118,13 +113,14 @@ class ForecastSales(models.Model):
         else:
             forecast = self.env['x.forecast.sale'].sudo().search([('x_mes','>=',start_month),('x_mes','<',end_month)])
             for record in forecast:
-                record.write({ 'x_locked': True })
+                record.write({ 'x_locked': True }, True)
         
         for record in forecast:
             prod_caja = list(filter(lambda f:f['product_id'] == record.x_producto.id, producto_caja))
             cajas_val = record.x_cajas
-            if record.id == forecast_id[0]:
-                cajas_val = cajas
+            if forecast_id:
+                if record.id == forecast_id[0]:
+                    cajas_val = cajas
             if(prod_caja):
                 prod_caja[0]['quantity'] = int(prod_caja[0]['quantity']) + cajas_val
             else:
@@ -141,7 +137,7 @@ class ForecastSales(models.Model):
         
         for pro_caj in producto_caja:
             quantity = int(pro_caj['quantity']) / qty_week
-            mrp_production_schedule = self.env['mrp.production.schedule'].search([('product_id','=',int(pro_caj['product_id']))])
+            mrp_production_schedule = self.env['mrp.production.schedule'].sudo().search([('product_id','=',int(pro_caj['product_id']))])
             if(quantity > 0 and mrp_production_schedule):
                 for date_start, date_stop in date_range:
                     if (date_start.month != date_stop.month and date_stop.day > 3 and date_stop.month == month) or \
@@ -165,7 +161,6 @@ class ForecastSales(models.Model):
 
     
     def _get_date_range(self):
-        self.ensure_one()
         date_range = []
         first_day = start_of(fields.Date.today(), self.env.company.manufacturing_period)
         manufacturing_period = self.env.company.manufacturing_period_to_display
@@ -180,6 +175,17 @@ class ForecastSales(models.Model):
             date_range.append((first_day, last_day))
             first_day = add(last_day, days=1)
         return date_range
+
+    def block_forecast_selected(self, records):
+        records.write({
+            'x_locked': True
+        })
+
+    def unblock_forecast_selected(self, records):
+        records.write({
+            'x_locked': False
+        })
+
 
 class ForecastCatalog(models.Model):
 

@@ -104,10 +104,10 @@
             <field eval="8" name="priority"/>
             <field name="arch" type="xml">
                 <tree string="Ventas" editable="bottom">
-                    <field name="x_producto" />
+                    <field name="x_producto" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_producto_pais" />
                     <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
-                    <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}"/>
+                    <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
                     <field name="x_tipo"/>
                 </tree>
@@ -163,6 +163,27 @@
             <!-- <field name="priority" eval="10" /> -->
         </record>
         <!-- END CRON JOB -->
+
+        <record id="x_block_forecast_selected" model="ir.actions.server">
+            <field name="name">Bloquear</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="forecast_custom.model_x_forecast_sale"/>
+            <field name="binding_model_id" ref="forecast_custom.model_x_forecast_sale"/>
+            <field name="groups_id" eval="[(4, ref('forecast_custom.group_forecast_forecastman_all_leads'))]"/>
+            <field name="state">code</field>
+            <field name="code">action = model.block_forecast_selected(records)</field>
+	    </record>
+        
+        <record id="x_unblock_forecast_selected" model="ir.actions.server">
+            <field name="name">Desbloquear</field>
+            <field name="type">ir.actions.server</field>
+            <field name="model_id" ref="forecast_custom.model_x_forecast_sale"/>
+            <field name="binding_model_id" ref="forecast_custom.model_x_forecast_sale"/>
+            <field name="groups_id" eval="[(4, ref('forecast_custom.group_forecast_forecastman_all_leads'))]"/>
+            <field name="state">code</field>
+            <field name="code">action = model.unblock_forecast_selected(records)</field>
+	    </record>
+
     </data>
 
 </odoo>
