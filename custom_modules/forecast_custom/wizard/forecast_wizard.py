@@ -16,6 +16,35 @@ class forecast_wizard_custom_0(models.TransientModel):
     _description = "Modal To Generate"
     
     date_generate = fields.Date('Mes', default=datetime.date.today())
+    message = fields.Char("Mensaje")
+
+
+    @api.onchange('date_generate')
+    def check_price_zero(self):
+        self.message = ""
+        self.ensure_one()
+        startMonth = datetime.datetime(self.date_generate.year, self.date_generate.month, 1)
+        endMonth = startMonth + relativedelta(months=1)
+        
+        data_catalogo = self.env['x.forecast.catalog'].search([('x_comercial','=',self.env.user.id)])
+        catalog_ids = list(x.id for x in data_catalogo)
+        data_sale = self.env['x.forecast.sale'].search(['&','&',('x_comercial','=',self.env.user.id),('x_mes','>=',startMonth),('x_mes','<',endMonth)])
+        sale_ids = list(x.x_forecast_catalog_id.id for x in data_sale)
+
+        for element in sale_ids:
+            if element in catalog_ids:
+                catalog_ids.remove(element)
+
+        if(len(catalog_ids) == 0):
+            return
+
+        data_catalogo = self.env['x.forecast.catalog'].search([('x_comercial','=',self.env.user.id),('id','in',catalog_ids)])
+        if(data_catalogo):
+            count = sum(1 for y in data_catalogo if y.x_precio_caja == 0)
+            if count > 0:
+                texto = "registro" if count == 1 else "registros"
+                self.message = "Información: Existen precios en el catálogo que son igual a 0. (%s %s)" % (count, texto)
+                
 
     def generate_forecast_ventas(self):
         self.ensure_one()
@@ -49,6 +78,7 @@ class forecast_wizard_custom_0(models.TransientModel):
                     'x_kg': 0,
                     'x_cajas': 0,
                     'x_tipo': catalogo.x_tipo,
+                    'x_precio_caja': catalogo.x_precio_caja,
                     'x_contacto': catalogo.x_contacto.id,
                     'x_cuenta_analitica': catalogo.x_cuenta_analitica.id,
                     'x_comercial': catalogo.x_comercial.id,

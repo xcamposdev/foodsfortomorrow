@@ -34,6 +34,9 @@ class ForecastSales(models.Model):
         ('canal','Canal')
         ], string="Tipo", readonly=True)
     x_unidades = fields.Integer(string="Unidades")
+    x_precio_caja = fields.Float("Precio €/caja", default=0)
+    x_precio_importe = fields.Float("Importe", default=0, compute="calculate_importe")
+    x_precio_kg = fields.Float("Precio €/kg", default=0, compute="calculate_kg")
     x_locked = fields.Boolean("Bloqueado", default=False)
     
     x_forecast_catalog_id = fields.Many2one('x.forecast.catalog', required=True, ondelete='cascade', index=True, copy=False)
@@ -84,7 +87,17 @@ class ForecastSales(models.Model):
                     'message': "La división entre " + str(self.x_kg * 1000) + " (gramos) y " + str(self.x_producto.x_studio_peso_umb_gr) + " (peso neto UMB gr) genera un resto de " + str(resto)
                 }
             }
-        
+
+    @api.depends('x_precio_caja','x_cajas')
+    def calculate_importe(self):
+        for record in self:
+            record.x_precio_importe = record.x_cajas * record.x_precio_caja
+
+    @api.depends('x_precio_caja','x_kg')
+    def calculate_kg(self):
+        for record in self:
+            record.x_precio_kg = record.x_kg * record.x_precio_caja
+
     def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)
         if is_cron == False and (vals.get('x_locked', False) or vals.get('x_cajas', False)):
@@ -207,6 +220,13 @@ class ForecastCatalog(models.Model):
         ('cliente','Cliente'),
         ('canal','Canal')
         ], string="Tipo", required=True)
+    x_precio_caja = fields.Float("Precio €/caja ", default=0)
+    x_precio_caja_modifiable = fields.Selection([
+        ('draft','Borrador'),
+        ('exist','Existe'),
+        ('custom','Modificado')
+        ], string="Es Modificable?", default="draft")
+    x_process = fields.Boolean("Accion", compute="get_price")
 
     x_forecast_sales = fields.One2many('x.forecast.sale', 'x_forecast_catalog_id', copy=True, auto_join=True)
 
@@ -214,3 +234,43 @@ class ForecastCatalog(models.Model):
     def get_product_country(self):
         for record in self:
             record.x_producto_pais = record.x_producto.x_studio_familia
+
+    @api.onchange('x_contacto','x_cuenta_analitica','x_tipo','x_producto')
+    def get_price(self):
+        for record in self:
+            record.x_process = False
+            if record.x_precio_caja_modifiable != "custom":
+                if record.x_producto and record.x_contacto and record.x_tipo == "cliente" and record.x_contacto.property_product_pricelist:
+                    product = record.x_producto.with_context(
+                        #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
+                        partner=record.x_contacto.id,
+                        quantity=1,
+                        date=datetime.date.today(),
+                        pricelist=record.x_contacto.property_product_pricelist.id,
+                        uom=record.x_producto.uom_id.id
+                    )
+                    if product.price:
+                        record.x_precio_caja = product.price
+                        record.x_precio_caja_modifiable = "exist"
+                    else:
+                        record.x_precio_caja = 0
+                        record.x_precio_caja_modifiable = "custom"
+                elif record.x_producto and record.x_cuenta_analitica and record.x_tipo == "canal" and record.x_cuenta_analitica.x_studio_tarifa:
+                    product = record.x_producto.with_context(
+                        #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
+                        #partner=record.x_contacto.id,
+                        quantity=1,
+                        date=datetime.date.today(),
+                        pricelist=record.x_cuenta_analitica.x_studio_tarifa.id,
+                        uom=record.x_producto.uom_id.id
+                    )
+                    if product.price:
+                        record.x_precio_caja = product.price
+                        record.x_precio_caja_modifiable = "exist"
+                    else:
+                        record.x_precio_caja = 0
+                        record.x_precio_caja_modifiable = "custom"
+                else:
+                    record.x_precio_caja = 0
+                    record.x_precio_caja_modifiable = "custom"
+

@@ -54,6 +54,9 @@
                     <field name="x_cajas" attrs="{'readonly': [('x_locked','=', True)]}"/>
                     <field name="x_unidades" attrs="{'readonly': [('x_locked','=', True)]}"/>
                     <field name="x_tipo" />
+                    <field name="x_precio_caja" />
+                    <field name="x_precio_importe" />
+                    <field name="x_precio_kg" />
                     <field name="x_contacto" />
                     <field name="x_cuenta_analitica" />
                     <field name="x_locked" groups="forecast_custom.group_forecast_forecastman_all_leads" optional="show" />
@@ -103,13 +106,16 @@
             <field name="model">x.forecast.catalog</field>
             <field eval="8" name="priority"/>
             <field name="arch" type="xml">
-                <tree string="Ventas" editable="bottom">
+                <tree string="Ventas" editable="bottom" decoration-info="x_precio_caja_modifiable == 'custom'">
                     <field name="x_producto" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_producto_pais" />
                     <field name="x_comercial" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
                     <field name="x_tipo"/>
+                    <field name="x_precio_caja" attrs="{'readonly':[('x_precio_caja_modifiable','!=','custom')]}" />
+                    <field name="x_precio_caja_modifiable" invisible="1"/>
+                    <field name="x_process" invisible="1"/>
                 </tree>
             </field>
         </record>
