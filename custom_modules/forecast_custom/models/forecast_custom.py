@@ -244,7 +244,7 @@ class ForecastCatalog(models.Model):
                     pricelist=record.x_contacto.property_product_pricelist.id,
                     uom=record.x_producto.uom_id.id
                 )
-                if product.price:
+                if product.price and product.price != 0:
                     record.x_precio_caja = product.price
                     record.x_precio_caja_modificable = False
                 else:
@@ -259,7 +259,7 @@ class ForecastCatalog(models.Model):
                     pricelist=record.x_cuenta_analitica.x_studio_tarifa.id,
                     uom=record.x_producto.uom_id.id
                 )
-                if product.price:
+                if product.price and product.price != 0:
                     record.x_precio_caja = product.price
                     record.x_precio_caja_modificable = False
                 else:
