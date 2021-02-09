@@ -96,7 +96,7 @@ class ForecastSales(models.Model):
     @api.depends('x_precio_caja','x_kg')
     def calculate_kg(self):
         for record in self:
-            record.x_precio_kg = self.x_producto.x_studio_unidades_caja_ud
+            record.x_precio_kg = record.x_producto.x_studio_unidades_caja_ud
 
     def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)
