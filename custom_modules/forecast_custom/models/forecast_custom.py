@@ -149,7 +149,7 @@ class ForecastSales(models.Model):
                 qty_week = qty_week + 1
         
         for pro_caj in producto_caja:
-            quantity = int(pro_caj['quantity']) / qty_week
+            quantity = int(pro_caj['quantity']) / (qty_week or 1)
             mrp_production_schedule = self.env['mrp.production.schedule'].sudo().search([('product_id','=',int(pro_caj['product_id']))])
             if(quantity > 0 and mrp_production_schedule):
                 for date_start, date_stop in date_range:
