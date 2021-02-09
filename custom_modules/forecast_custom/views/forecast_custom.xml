@@ -113,7 +113,7 @@
                     <field name="x_contacto" attrs="{'required': [('x_tipo','=', 'cliente')]}" options="{'no_create': True, 'no_create_edit': True }" />
                     <field name="x_cuenta_analitica" attrs="{'required': [('x_tipo','=', 'canal')]}"/>
                     <field name="x_tipo"/>
-                    <field name="x_precio_caja" attrs="{'readonly':[('x_precio_caja_modificable','==',False)]}" force_save="True" />
+                    <field name="x_precio_caja" attrs="{'readonly':[('x_precio_caja_modificable','=',False)]}" force_save="True" />
                     <field name="x_precio_caja_modificable" invisible="1"/>
                     <field name="x_process" invisible="1"/>
                 </tree>
