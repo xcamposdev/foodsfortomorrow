@@ -221,11 +221,7 @@ class ForecastCatalog(models.Model):
         ('canal','Canal')
         ], string="Tipo", required=True)
     x_precio_caja = fields.Float("Precio €/caja ", default=0)
-    x_precio_caja_modifiable = fields.Selection([
-        ('draft','Borrador'),
-        ('exist','Existe'),
-        ('custom','Modificado')
-        ], string="Es Modificable?", default="draft")
+    x_precio_caja_modificable = fields.Boolean(string="Es Modificable?")
     x_process = fields.Boolean("Accion", compute="get_price")
 
     x_forecast_sales = fields.One2many('x.forecast.sale', 'x_forecast_catalog_id', copy=True, auto_join=True)
@@ -239,38 +235,37 @@ class ForecastCatalog(models.Model):
     def get_price(self):
         for record in self:
             record.x_process = False
-            if record.x_precio_caja_modifiable != "custom":
-                if record.x_producto and record.x_contacto and record.x_tipo == "cliente" and record.x_contacto.property_product_pricelist:
-                    product = record.x_producto.with_context(
-                        #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
-                        partner=record.x_contacto.id,
-                        quantity=1,
-                        date=datetime.date.today(),
-                        pricelist=record.x_contacto.property_product_pricelist.id,
-                        uom=record.x_producto.uom_id.id
-                    )
-                    if product.price:
-                        record.x_precio_caja = product.price
-                        record.x_precio_caja_modifiable = "exist"
-                    else:
-                        record.x_precio_caja = 0
-                        record.x_precio_caja_modifiable = "custom"
-                elif record.x_producto and record.x_cuenta_analitica and record.x_tipo == "canal" and record.x_cuenta_analitica.x_studio_tarifa:
-                    product = record.x_producto.with_context(
-                        #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
-                        #partner=record.x_contacto.id,
-                        quantity=1,
-                        date=datetime.date.today(),
-                        pricelist=record.x_cuenta_analitica.x_studio_tarifa.id,
-                        uom=record.x_producto.uom_id.id
-                    )
-                    if product.price:
-                        record.x_precio_caja = product.price
-                        record.x_precio_caja_modifiable = "exist"
-                    else:
-                        record.x_precio_caja = 0
-                        record.x_precio_caja_modifiable = "custom"
+            if record.x_producto and record.x_contacto and record.x_tipo == "cliente" and record.x_contacto.property_product_pricelist:
+                product = record.x_producto.with_context(
+                    #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
+                    partner=record.x_contacto.id,
+                    quantity=1,
+                    date=datetime.date.today(),
+                    pricelist=record.x_contacto.property_product_pricelist.id,
+                    uom=record.x_producto.uom_id.id
+                )
+                if product.price:
+                    record.x_precio_caja = product.price
+                    record.x_precio_caja_modificable = False
                 else:
-                    record.x_precio_caja = 0
-                    record.x_precio_caja_modifiable = "custom"
+                    #record.x_precio_caja = 0
+                    record.x_precio_caja_modificable = True
+            elif record.x_producto and record.x_cuenta_analitica and record.x_tipo == "canal" and record.x_cuenta_analitica.x_studio_tarifa:
+                product = record.x_producto.with_context(
+                    #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
+                    #partner=record.x_contacto.id,
+                    quantity=1,
+                    date=datetime.date.today(),
+                    pricelist=record.x_cuenta_analitica.x_studio_tarifa.id,
+                    uom=record.x_producto.uom_id.id
+                )
+                if product.price:
+                    record.x_precio_caja = product.price
+                    record.x_precio_caja_modificable = False
+                else:
+                    #record.x_precio_caja = 0
+                    record.x_precio_caja_modificable = True
+            else:
+                #record.x_precio_caja = 0
+                record.x_precio_caja_modificable = True
 
