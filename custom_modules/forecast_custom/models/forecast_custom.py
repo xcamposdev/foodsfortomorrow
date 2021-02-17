@@ -34,9 +34,10 @@ class ForecastSales(models.Model):
         ('canal','Canal')
         ], string="Tipo", readonly=True)
     x_unidades = fields.Integer(string="Unidades")
-    x_precio_caja = fields.Float("Precio €/caja", default=0)
-    x_precio_importe = fields.Float("Importe", default=0, compute="calculate_importe")
     x_precio_kg = fields.Float("Precio €/kg", default=0, compute="calculate_kg")
+    x_precio_caja = fields.Float("Precio €/caja", default=0)
+    x_precio_unidades = fields.Float("Precio €/unidades", default=0, compute="calculate_unidades")
+    x_precio_importe = fields.Float("Importe", default=0, compute="calculate_importe")
     x_locked = fields.Boolean("Bloqueado", default=False)
     
     x_forecast_catalog_id = fields.Many2one('x.forecast.catalog', required=True, ondelete='cascade', index=True, copy=False)
@@ -88,15 +89,22 @@ class ForecastSales(models.Model):
                 }
             }
 
-    @api.depends('x_precio_caja','x_cajas')
-    def calculate_importe(self):
-        for record in self:
-            record.x_precio_importe = record.x_cajas * record.x_precio_caja
 
     @api.depends('x_precio_caja')
     def calculate_kg(self):
         for record in self:
-            record.x_precio_kg = record.x_producto.x_studio_unidades_caja_ud * record.x_precio_caja
+            record.x_precio_kg = record.x_precio_caja * record.x_producto.x_studio_peso_umb_gr / 1000
+
+    @api.depends('x_precio_caja')
+    def calculate_unidades(self):
+        for record in self:
+            record.x_precio_unidades = (record.x_producto.x_studio_unidades_caja_ud + (record.x_producto.x_studio_n_bolsas or 0)) * record.x_precio_caja
+
+    @api.depends('x_precio_caja','x_cajas')
+    def calculate_importe(self):
+        for record in self:
+            record.x_precio_importe = record.x_cajas * record.x_precio_caja    
+
 
     def write(self, vals, is_cron=False):
         res = super(ForecastSales, self).write(vals)

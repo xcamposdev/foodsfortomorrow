@@ -54,8 +54,11 @@
                     <field name="x_cajas" attrs="{'readonly': [('x_locked','=', True)]}"/>
                     <field name="x_unidades" attrs="{'readonly': [('x_locked','=', True)]}"/>
                     <field name="x_tipo" />
-                    <field name="x_precio_caja" readonly="1" />
+
                     <field name="x_precio_kg" />
+                    <field name="x_precio_caja" readonly="1" />
+                    <field name="x_precio_unidades" />
+                    
                     <field name="x_precio_importe" />
                     <field name="x_contacto" />
                     <field name="x_cuenta_analitica" />
