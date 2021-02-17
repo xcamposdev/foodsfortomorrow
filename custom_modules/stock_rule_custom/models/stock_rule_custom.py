@@ -52,7 +52,14 @@ class stock_rule_custom(models.Model):
             # Check if a PO exists for the current domain.
             po = self.env['purchase.order'].sudo().search([dom for dom in domain], limit=1)
             company_id = procurements[0].company_id
-            po = False
+
+            if origins:
+                if len(list(origins)) == 1:
+                    sale = self.env['sale.order'].search([('name','=',list(origins)[0])])
+                    if sale:
+                        po = False
+
+            
             if not po:
                 # We need a rule to generate the PO. However the rule generated
                 # the same domain for PO and the _prepare_purchase_order method
