@@ -93,12 +93,14 @@ class ForecastSales(models.Model):
     @api.depends('x_precio_caja')
     def calculate_kg(self):
         for record in self:
-            record.x_precio_kg = record.x_precio_caja * record.x_producto.x_studio_peso_umb_gr / 1000
+            peso = record.x_producto.x_studio_peso_umb_gr / 1000
+            record.x_precio_kg = record.x_precio_caja / (peso if peso > 1 else 1)
 
     @api.depends('x_precio_caja')
     def calculate_unidades(self):
         for record in self:
-            record.x_precio_unidades = (record.x_producto.x_studio_unidades_caja_ud + (record.x_producto.x_studio_n_bolsas or 0)) * record.x_precio_caja
+            unidades = (record.x_producto.x_studio_unidades_caja_ud + (record.x_producto.x_studio_n_bolsas or 0))
+            record.x_precio_unidades = record.x_precio_caja / (unidades if unidades > 1 else 1)
 
     @api.depends('x_precio_caja','x_cajas')
     def calculate_importe(self):
