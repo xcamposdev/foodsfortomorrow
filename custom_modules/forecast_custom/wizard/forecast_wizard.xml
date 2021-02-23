@@ -7,6 +7,7 @@
             <form string="Información">
                 <group string="Información General">
                     <field name="date_generate" />
+                    <field name="message" string="" readonly="1" style="color:#dc6965" />
                 </group>
                 <footer>
                     <button name="generate_forecast_ventas" string="Generar" type="object" class="btn-primary"/>
