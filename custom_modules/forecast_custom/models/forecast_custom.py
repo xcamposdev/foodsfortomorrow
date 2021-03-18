@@ -259,7 +259,26 @@ class ForecastCatalog(models.Model):
                     record.x_precio_caja_modificable = False
                 else:
                     #record.x_precio_caja = 0
-                    record.x_precio_caja_modificable = True
+                    delivery_partner = self.env['res.partner'].search([
+                        ('parent_id', '=', record.x_contacto.id),
+                        ('type', '=', 'delivery')
+                    ])
+                    if delivery_partner:
+                        product = record.x_producto.with_context(
+                            quantity=1,
+                            date=datetime.date.today(),
+                            pricelist=delivery_partner[0].property_product_pricelist.id,
+                            uom=record.x_producto.uom_id.id
+                        )
+                        if product.price and product.price != 0:
+                            record.x_precio_caja = product.price
+                            record.x_precio_caja_modificable = False
+                        else:
+                            #record.x_precio_caja = 0
+                            record.x_precio_caja_modificable = True
+                    else:
+                        record.x_precio_caja_modificable = True
+                    #record.x_precio_caja_modificable = True
             elif record.x_producto and record.x_cuenta_analitica and record.x_tipo == "canal" and record.x_cuenta_analitica.x_studio_tarifa:
                 product = record.x_producto.with_context(
                     #lang=get_lang(self.env, self.order_id.partner_id.lang).code,
