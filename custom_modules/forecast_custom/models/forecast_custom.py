@@ -37,7 +37,7 @@ class ForecastSales(models.Model):
     x_precio_kg = fields.Float("Precio €/kg", default=0, compute="calculate_kg")
     x_precio_caja = fields.Float("Precio €/caja", default=0)
     x_precio_unidades = fields.Float("Precio €/unidades", default=0, compute="calculate_unidades")
-    x_precio_importe = fields.Float("Importe", default=0, compute="calculate_importe")
+    x_precio_importe = fields.Float("Importe", default=0, compute="calculate_importe",store=True)
     x_locked = fields.Boolean("Bloqueado", default=False)
     
     x_forecast_catalog_id = fields.Many2one('x.forecast.catalog', required=True, ondelete='cascade', index=True, copy=False)
