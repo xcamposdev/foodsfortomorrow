@@ -56,7 +56,7 @@ class ForecastReportAnalitica(models.Model):
     @api.model
     def _where(self):
         return '''
-        WHERE sale.state = 'sale' and sale_line.product_id in (SELECT DISTINCT x_producto FROM x_forecast_catalog) 
+        WHERE (sale.state = 'sale' or sale.state = 'done') and sale_line.product_id in (SELECT DISTINCT x_producto FROM x_forecast_catalog) 
         and sale.analytic_account_id in (SELECT DISTINCT x_cuenta_analitica FROM x_forecast_catalog)
         '''
 
