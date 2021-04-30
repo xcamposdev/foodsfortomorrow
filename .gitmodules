@@ -57,3 +57,7 @@
 	path = OCA/mis-builder
 	url = git@github.com:oca/mis-builder.git
 	branch = 13.0
+[submodule "impulsodiagonal/syncid"]
+	path = impulsodiagonal/syncid
+	url = https://github.com/odoospace/syncid.git
+	branch = 13.0
