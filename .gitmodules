@@ -61,3 +61,7 @@
 	path = impulsodiagonal/syncid
 	url = https://github.com/odoospace/syncid.git
 	branch = 13.0
+[submodule "OCA/social"]
+	path = OCA/social
+	url = https://github.com/oca/social
+	branch = 13.0
